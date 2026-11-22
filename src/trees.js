@@ -116,7 +116,7 @@ export function stageForMinutes(minutes) {
 
 export function heightForMinutes(minutes) {
   const clamped = Math.max(1, Math.min(50, minutes));
-  return Math.round(24 + (clamped / 50) * 44);
+  return Math.round(38 + (clamped / 50) * 52);
 }
 
 export function stageForProgress(progress) {

@@ -9,8 +9,9 @@ Ruhiger Fokus-Timer für Windows 11: Während des Lernens wächst ein Baum live 
 - **Wald** mit Tagesgruppen, Baumgröße nach tatsächlicher Lernzeit
 - **6 Baumarten**, freigeschaltet über Gesamtstunden (Eiche, Birke, Tanne, Ahorn, Kirsche, Ulme)
 - **Statistik**: Heute, Woche, Gesamt, Streak und 7-Tage-Balkendiagramm
-- **Hell/Dunkel/System**, dezenter Glockenton am Sessionende
-- **Mini-Modus** (immer im Vordergrund) und **Tray**: Schließen legt die App in den Tray, der Timer läuft weiter
+- **Hell/Dunkel/System**, sanfter Klangschalen-Ton am Sessionende
+- **Waldansicht** als großes Wald-Bild mit allen Bäumen, plus Tagesverlauf
+- **Mini-Modus** (kompakt, immer im Vordergrund) über Titelleisten-Button oder `Strg+M`; **Tray**: Schließen legt die App in den Tray, der Timer läuft weiter
 - **Autostart**, Wiederherstellung einer laufenden Session nach Neustart
 - **Hilfe-Tab** mit Kurzbeschreibung, Tastaturkürzeln und Versionsnummer
 - Installer und portable EXE
@@ -51,7 +52,7 @@ npm run tauri build
 
 Artefakte:
 
-- Installer: `src-tauri/target/release/bundle/nsis/Baumzeit_0.2.0_x64-setup.exe`
+- Installer: `src-tauri/target/release/bundle/nsis/Baumzeit_0.2.1_x64-setup.exe`
 - Portable: `src-tauri/target/release/baumzeit.exe`
 
 ## Daten

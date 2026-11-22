@@ -1,7 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { emit, listen } from '@tauri-apps/api/event';
 import {
-  SPECIES, SPECIES_LIST, treeSVG, stageForMinutes, heightForMinutes, stageForProgress
+  SPECIES, SPECIES_LIST, treeSVG, stageForMinutes, heightForMinutes, stageForProgress, mulberry32
 } from './trees.js';
 import {
   computeStats, groupSessionsByDay, formatDayHeading, formatDateShort,
@@ -41,6 +41,64 @@ function fmtClock(ms) {
 function treeHTML(species, stage, seed, height, cls = '') {
   return treeSVG(species, stage, seed, cls)
     .replace('<svg', `<svg style="height:${Math.round(height)}px;width:auto"`);
+}
+
+function forestSceneHTML(sessions) {
+  const trees = (sessions || []).filter((s) => s && Number(s.minutes) > 0);
+  if (!trees.length) {
+    return '<div class="empty-state">Noch kein Baum gepflanzt.<br>Starte deine erste Session – der Wald wächst mit jeder Minute.</div>';
+  }
+
+  const W = 900;
+  const H = 380;
+  const groundY = 318;
+  const placed = trees.map((s, i) => {
+    const rnd = mulberry32((Number(s.seed) || i + 1) * 977 + i * 37);
+    const minutes = Math.max(1, Number(s.minutes) || 1);
+    const scale = 0.55 + (Math.min(50, minutes) / 50) * 0.75; // 0.55..1.3
+    const x = 35 + rnd() * (W - 70);
+    const depth = rnd(); // 0 hinten, 1 vorne
+    const y = groundY - 70 + depth * 70;
+    return { s, minutes, scale, x, y, depth, z: Math.round(depth * 1000) };
+  }).sort((a, b) => a.y - b.y || a.x - b.x);
+
+  const hills = `
+    <defs>
+      <linearGradient id="forestSky" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="var(--forest-sky-a)"/>
+        <stop offset="100%" stop-color="var(--forest-sky-b)"/>
+      </linearGradient>
+      <linearGradient id="forestGround" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="var(--forest-ground-a)"/>
+        <stop offset="100%" stop-color="var(--forest-ground-b)"/>
+      </linearGradient>
+    </defs>
+    <rect x="0" y="0" width="${W}" height="${H}" fill="url(#forestSky)"/>
+    <ellipse cx="180" cy="250" rx="260" ry="70" fill="var(--forest-hill-far)" opacity="0.55"/>
+    <ellipse cx="720" cy="255" rx="280" ry="75" fill="var(--forest-hill-far)" opacity="0.5"/>
+    <ellipse cx="450" cy="275" rx="360" ry="85" fill="var(--forest-hill-near)" opacity="0.45"/>
+    <rect x="0" y="${groundY}" width="${W}" height="${H - groundY}" fill="url(#forestGround)"/>
+    <ellipse cx="450" cy="${groundY + 10}" rx="520" ry="46" fill="var(--forest-ground-shadow)" opacity="0.18"/>
+  `;
+
+  const treeGroups = placed.map(({ s, scale, x, y, depth }) => {
+    const stage = stageForMinutes(s.minutes);
+    const inner = treeSVG(s.species, stage, s.seed)
+      .replace(/^<svg[^>]*>/, '')
+      .replace(/<\/svg>$/, '')
+      .replace(/<ellipse[^>]*cx="50"[^>]*cy="133"[^>]*\/>/, ''); // Bodenschatten des Einzelbaums entfernen
+    const alpha = 0.78 + depth * 0.22;
+    const tx = (x - 50 * scale).toFixed(1);
+    const ty = (y - 132 * scale).toFixed(1);
+    return `<g transform="translate(${tx} ${ty}) scale(${scale.toFixed(3)})" opacity="${alpha.toFixed(2)}">${inner}</g>`;
+  }).join('');
+
+  return `<div class="forest-scene" role="img" aria-label="Wald mit ${trees.length} Bäumen">
+    <svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      ${hills}
+      ${treeGroups}
+    </svg>
+  </div>`;
 }
 
 function defaultState() {
@@ -554,10 +612,11 @@ export class App {
     const host = this.$('waldDays');
     if (host) {
       const groups = groupSessionsByDay(this.state.sessions, 30);
+      const forest = forestSceneHTML(this.state.sessions);
       if (!groups.length) {
-        host.innerHTML = '<div class="empty-state">Noch kein Baum gepflanzt.<br>Starte deine erste Session – der Wald wächst mit jeder Minute.</div>';
+        host.innerHTML = forest;
       } else {
-        host.innerHTML = groups.map((g) => {
+        const days = groups.map((g) => {
           const heading = formatDayHeading(g.date);
           const dateText = formatDateShort(g.date);
           const meta = `${formatMinutes(g.minutes)} · ${g.trees.length} ${g.trees.length === 1 ? 'Baum' : 'Bäume'}`;
@@ -569,6 +628,7 @@ export class App {
             <div class="day-strip">${trees}</div>
           </div>`;
         }).join('');
+        host.innerHTML = `${forest}<div class="wald-history"><div class="section-head" style="margin:14px 2px 10px"><span class="section-title" style="font-size:13px">Verlauf</span><span class="card-sub">nach Tagen</span></div>${days}</div>`;
       }
     }
 
@@ -835,6 +895,8 @@ export class App {
     if (winMax) winMax.addEventListener('click', () => this.call('toggle_maximize'));
     const winClose = this.$('winClose');
     if (winClose) winClose.addEventListener('click', () => this.call('close_main'));
+    const miniModeBtn = this.$('miniModeBtn');
+    if (miniModeBtn) miniModeBtn.addEventListener('click', () => this.openMini());
 
     const pauseBtn = this.$('pauseBtn');
     if (pauseBtn) pauseBtn.addEventListener('click', () => this.togglePauseOrStart());
@@ -1057,7 +1119,7 @@ export class App {
         host.innerHTML = treeSVG(species, stage, seed);
         const svg = host.querySelector('svg');
         if (svg) {
-          svg.style.height = '48px';
+          svg.style.height = '42px';
           svg.style.width = 'auto';
         }
       }
