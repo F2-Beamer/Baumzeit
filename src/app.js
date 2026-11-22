@@ -43,6 +43,12 @@ function treeHTML(species, stage, seed, height, cls = '') {
     .replace('<svg', `<svg style="height:${Math.round(height)}px;width:auto"`);
 }
 
+// Voll ausgewachsener Baum (50 Min) füllt die Verlaufshöhe; andere proportional.
+function historyTreeHeight(minutes) {
+  const clamped = Math.max(1, Math.min(50, Number(minutes) || 1));
+  return Math.round(28 + (clamped / 50) * 76);
+}
+
 function forestSceneHTML(sessions) {
   const trees = (sessions || []).filter((s) => s && Number(s.minutes) > 0);
   if (!trees.length) {
@@ -72,6 +78,44 @@ function forestSceneHTML(sessions) {
     return { s, minutes, scale, x, y, depth };
   }).sort((a, b) => a.y - b.y || a.x - b.x);
 
+  // ViewBox auf vorhandene Bäume zoomen (mit Rand), damit der Wald die Fläche füllt.
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  for (const p of placed) {
+    const tx = p.x - 50 * p.scale;
+    const ty = p.y - 132 * p.scale;
+    minX = Math.min(minX, tx);
+    minY = Math.min(minY, ty);
+    maxX = Math.max(maxX, tx + 100 * p.scale);
+    maxY = Math.max(maxY, ty + 136 * p.scale);
+  }
+  const padX = 44;
+  const padTop = 36;
+  const padBottom = 48;
+  minX = Math.max(0, minX - padX);
+  minY = Math.max(0, minY - padTop);
+  maxX = Math.min(W, maxX + padX);
+  maxY = Math.min(H, Math.max(groundY + 28, maxY + padBottom));
+  let vbW = Math.max(220, maxX - minX);
+  let vbH = Math.max(160, maxY - minY);
+  // Mindest-Seitenverhältnis beibehalten, damit es nicht zu extrem wird.
+  const targetAspect = W / H;
+  const aspect = vbW / vbH;
+  if (aspect > targetAspect * 1.35) {
+    const newH = vbW / (targetAspect * 1.35);
+    minY = Math.max(0, minY - (newH - vbH) / 2);
+    vbH = newH;
+  } else if (aspect < targetAspect * 0.65) {
+    const newW = vbH * (targetAspect * 0.65);
+    minX = Math.max(0, minX - (newW - vbW) / 2);
+    vbW = newW;
+  }
+  if (minX + vbW > W) minX = Math.max(0, W - vbW);
+  if (minY + vbH > H) minY = Math.max(0, H - vbH);
+  const vbX = Math.round(minX);
+  const vbY = Math.round(minY);
+  vbW = Math.round(Math.min(W - vbX, vbW));
+  vbH = Math.round(Math.min(H - vbY, vbH));
+
   const hills = `
     <defs>
       <linearGradient id="forestSky" x1="0" y1="0" x2="0" y2="1">
@@ -83,11 +127,11 @@ function forestSceneHTML(sessions) {
         <stop offset="100%" stop-color="var(--forest-ground-b)"/>
       </linearGradient>
     </defs>
-    <rect x="0" y="0" width="${W}" height="${H}" fill="url(#forestSky)"/>
+    <rect x="${vbX}" y="${vbY}" width="${vbW}" height="${vbH}" fill="url(#forestSky)"/>
     <ellipse cx="180" cy="250" rx="260" ry="70" fill="var(--forest-hill-far)" opacity="0.55"/>
     <ellipse cx="720" cy="255" rx="280" ry="75" fill="var(--forest-hill-far)" opacity="0.5"/>
     <ellipse cx="450" cy="275" rx="360" ry="85" fill="var(--forest-hill-near)" opacity="0.45"/>
-    <rect x="0" y="${groundY}" width="${W}" height="${H - groundY}" fill="url(#forestGround)"/>
+    <rect x="${vbX}" y="${groundY}" width="${vbW}" height="${Math.max(0, vbY + vbH - groundY)}" fill="url(#forestGround)"/>
     <ellipse cx="450" cy="${groundY + 10}" rx="520" ry="46" fill="var(--forest-ground-shadow)" opacity="0.18"/>
   `;
 
@@ -104,7 +148,7 @@ function forestSceneHTML(sessions) {
   }).join('');
 
   return `<div class="forest-scene" role="img" aria-label="Wald mit ${trees.length} Bäumen">
-    <svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <svg viewBox="${vbX} ${vbY} ${vbW} ${vbH}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       ${hills}
       ${treeGroups}
     </svg>
@@ -603,7 +647,7 @@ export class App {
       return;
     }
     host.innerHTML = recent.map((s) => (
-      `<span class="slot">${treeHTML(s.species, stageForMinutes(s.minutes), s.seed, heightForMinutes(s.minutes))}</span>`
+      `<span class="slot">${treeHTML(s.species, stageForMinutes(s.minutes), s.seed, historyTreeHeight(s.minutes))}</span>`
     )).join('');
     const latest = new Date(recent[0].endedAt);
     const now = new Date();
@@ -631,7 +675,7 @@ export class App {
           const dateText = formatDateShort(g.date);
           const meta = `${formatMinutes(g.minutes)} · ${g.trees.length} ${g.trees.length === 1 ? 'Baum' : 'Bäume'}`;
           const trees = g.trees.map((t) => (
-            `<span class="slot">${treeHTML(t.species, stageForMinutes(t.minutes), t.seed, heightForMinutes(t.minutes))}</span>`
+            `<span class="slot">${treeHTML(t.species, stageForMinutes(t.minutes), t.seed, historyTreeHeight(t.minutes))}</span>`
           )).join('');
           return `<div class="day">
             <div class="day-head"><span class="day-name">${heading} <span class="day-date">${dateText}</span></span><span class="day-meta">${meta}</span></div>

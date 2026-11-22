@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FBF8F1"/>
+      <stop offset="100%" stop-color="#EFE7D6"/>
+    </linearGradient>
+    <linearGradient id="ring2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6B9A74"/>
+      <stop offset="100%" stop-color="#3F6D4E"/>
+    </linearGradient>
+    <linearGradient id="tree2" x1="0.2" y1="0" x2="0.8" y2="1">
+      <stop offset="0%" stop-color="#4F805D"/>
+      <stop offset="100%" stop-color="#345C41"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="115" fill="url(#bg2)"/>
+  <!-- Zeitring -->
+  <circle cx="256" cy="256" r="168" fill="none" stroke="#DDD5C4" stroke-width="22"/>
+  <circle cx="256" cy="256" r="168" fill="none" stroke="url(#ring2)" stroke-width="22" stroke-linecap="round"
+          stroke-dasharray="791 1055" stroke-dashoffset="132" transform="rotate(-90 256 256)"/>
+  <!-- kleiner Zeitpunkt -->
+  <circle cx="256" cy="88" r="10" fill="#3F6D4E"/>
+  <!-- Baum -->
+  <g>
+    <path d="M256 148 C214 148 182 176 182 210 C182 228 191 244 205 255 C184 264 170 284 170 308 C170 342 198 370 234 372 L234 392 L278 392 L278 372 C314 370 342 342 342 308 C342 284 328 264 307 255 C321 244 330 228 330 210 C330 176 298 148 256 148 Z" fill="url(#tree2)"/>
+    <rect x="244" y="350" width="24" height="52" rx="6" fill="#7A634D"/>
+    <path d="M256 176 C230 176 208 194 208 216 C208 230 216 242 228 249" fill="none" stroke="#F5FAF3" stroke-opacity="0.22" stroke-width="8" stroke-linecap="round"/>
+  </g>
+</svg>

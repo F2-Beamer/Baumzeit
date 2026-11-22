@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Baumzeit – Icon-Vorschläge</title>
+  <style>
+    :root {
+      --bg: #f4f1ea;
+      --surface: #fffdf8;
+      --text: #26312a;
+      --muted: #6d786f;
+      --border: #ddd6c6;
+      --accent: #3f6d4e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+      background: linear-gradient(180deg, #fbf9f4, var(--bg));
+      color: var(--text);
+      padding: 40px 24px 64px;
+    }
+    .page { max-width: 1180px; margin: 0 auto; }
+    h1 { margin: 0 0 6px; font-size: 32px; font-weight: 650; letter-spacing: -0.02em; }
+    .lead { margin: 0 0 32px; color: var(--muted); font-size: 15px; line-height: 1.6; max-width: 760px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 8px 24px rgba(44, 54, 48, 0.05);
+    }
+    .head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+    .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: #e3ecdd; color: var(--accent); font-size: 13px; font-weight: 700; flex: 0 0 auto;
+    }
+    .title-wrap { display: flex; align-items: center; gap: 10px; }
+    h2 { margin: 0; font-size: 17px; font-weight: 650; }
+    .tag { font-size: 11px; color: var(--muted); background: #f3f0e8; border: 1px solid var(--border); padding: 3px 8px; border-radius: 999px; white-space: nowrap; }
+    .desc { margin: 0 0 18px; font-size: 13px; color: var(--muted); line-height: 1.55; min-height: 42px; }
+    .preview {
+      display: flex; align-items: center; justify-content: center;
+      padding: 28px; border-radius: 14px; margin-bottom: 16px;
+      background: linear-gradient(180deg, #fbf9f4, #efe8da);
+      border: 1px solid #e6ddce;
+    }
+    .preview img { width: 160px; height: 160px; display: block; border-radius: 22.5%; }
+    .sizes {
+      display: flex; align-items: flex-end; gap: 14px; padding: 14px 16px;
+      background: #f7f4ec; border-radius: 12px; border: 1px solid #ebe4d5;
+      margin-bottom: 14px;
+    }
+    .size { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .size img { display: block; border-radius: 22.5%; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+    .size span { font-size: 10px; color: var(--muted); font-variant-numeric: tabular-nums; }
+    .bg-row { display: flex; gap: 10px; }
+    .bg-sample {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px;
+      padding: 12px; border-radius: 10px; font-size: 11px; color: var(--muted);
+    }
+    .bg-sample img { width: 32px; height: 32px; border-radius: 22.5%; display: block; }
+    .bg-light { background: #f3efe4; border: 1px solid #e2dac9; }
+    .bg-dark { background: #252d28; border: 1px solid #3a443c; color: #a8b4aa; }
+    .bg-taskbar { background: #1f1f1f; border: 1px solid #333; color: #aaa; }
+    .note {
+      margin-top: 28px; padding: 16px 18px; border-radius: 12px;
+      background: #edf3e8; border: 1px solid #d4e0cd; color: #3d5642; font-size: 13px; line-height: 1.6;
+    }
+    .note strong { color: #2f5138; }
+    code { font-family: "Cascadia Mono", Consolas, monospace; font-size: 12px; background: rgba(255,255,255,0.5); padding: 1px 5px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1>Baumzeit – Icon-Vorschläge</h1>
+    <p class="lead">Fünf Icon-Richtungen für Baumzeit. Alle sind als quadratische SVGs angelegt und lassen sich mit <code>npx tauri icon</code> in alle benötigten Formate für Windows, Tray und Installer umwandeln.</p>
+
+    <div class="grid">
+      <article class="card">
+        <div class="head">
+          <div class="title-wrap"><span class="num">1</span><h2>Minimaler Baum</h2></div>
+          <span class="tag">klar & direkt</span>
+        </div>
+        <p class="desc">Reduzierter Nadelbaum auf sattem Grün. Sehr gut lesbar in kleinen Größen, wirkt ruhig und eindeutig als App-Icon.</p>
+        <div class="preview"><img src="icons/vorschlag-1-minimaler-baum.svg" alt="Vorschlag 1"></div>
+        <div class="sizes">
+          <div class="size"><img src="icons/vorschlag-1-minimaler-baum.svg" width="64" height="64" alt=""><span>64 px</span></div>
+          <div class="size"><img src="icons/vorschlag-1-minimaler-baum.svg" width="48" height="48" alt=""><span>48 px</span></div>
+          <div class="size"><img src="icons/vorschlag-1-minimaler-baum.svg" width="32" height="32" alt=""><span>32 px</span></div>
+          <div class="size"><img src="icons/vorschlag-1-minimaler-baum.svg" width="16" height="16" alt=""><span>16 px</span></div>
+        </div>
+        <div class="bg-row">
+          <div class="bg-sample bg-light"><img src="icons/vorschlag-1-minimaler-baum.svg" alt="">Hell</div>
+          <div class="bg-sample bg-dark"><img src="icons/vorschlag-1-minimaler-baum.svg" alt="">Dunkel</div>
+          <div class="bg-sample bg-taskbar"><img src="icons/vorschlag-1-minimaler-baum.svg" alt="">Taskleiste</div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="head">
+          <div class="title-wrap"><span class="num">2</span><h2>Baum & Zeitring</h2></div>
+          <span class="tag">Timer + Natur</span>
+        </div>
+        <p class="desc">Verbindet Fokus-Timer und Baum in einem Zeichen: Der Fortschrittsring erzählt sofort, worum es bei Baumzeit geht.</p>
+        <div class="preview"><img src="icons/vorschlag-2-baum-zeitring.svg" alt="Vorschlag 2"></div>
+        <div class="sizes">
+          <div class="size"><img src="icons/vorschlag-2-baum-zeitring.svg" width="64" height="64" alt=""><span>64 px</span></div>
+          <div class="size"><img src="icons/vorschlag-2-baum-zeitring.svg" width="48" height="48" alt=""><span>48 px</span></div>
+          <div class="size"><img src="icons/vorschlag-2-baum-zeitring.svg" width="32" height="32" alt=""><span>32 px</span></div>
+          <div class="size"><img src="icons/vorschlag-2-baum-zeitring.svg" width="16" height="16" alt=""><span>16 px</span></div>
+        </div>
+        <div class="bg-row">
+          <div class="bg-sample bg-light"><img src="icons/vorschlag-2-baum-zeitring.svg" alt="">Hell</div>
+          <div class="bg-sample bg-dark"><img src="icons/vorschlag-2-baum-zeitring.svg" alt="">Dunkel</div>
+          <div class="bg-sample bg-taskbar"><img src="icons/vorschlag-2-baum-zeitring.svg" alt="">Taskleiste</div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="head">
+          <div class="title-wrap"><span class="num">3</span><h2>Warmer Setzling</h2></div>
+          <span class="tag">sanft & freundlich</span>
+        </div>
+        <p class="desc">Junger Setzling auf warmem, hellem Grund. Betont den ruhigen, freundlichen Charakter der App – weniger „Tool“, mehr Begleiter.</p>
+        <div class="preview"><img src="icons/vorschlag-3-setzling-warm.svg" alt="Vorschlag 3"></div>
+        <div class="sizes">
+          <div class="size"><img src="icons/vorschlag-3-setzling-warm.svg" width="64" height="64" alt=""><span>64 px</span></div>
+          <div class="size"><img src="icons/vorschlag-3-setzling-warm.svg" width="48" height="48" alt=""><span>48 px</span></div>
+          <div class="size"><img src="icons/vorschlag-3-setzling-warm.svg" width="32" height="32" alt=""><span>32 px</span></div>
+          <div class="size"><img src="icons/vorschlag-3-setzling-warm.svg" width="16" height="16" alt=""><span>16 px</span></div>
+        </div>
+        <div class="bg-row">
+          <div class="bg-sample bg-light"><img src="icons/vorschlag-3-setzling-warm.svg" alt="">Hell</div>
+          <div class="bg-sample bg-dark"><img src="icons/vorschlag-3-setzling-warm.svg" alt="">Dunkel</div>
+          <div class="bg-sample bg-taskbar"><img src="icons/vorschlag-3-setzling-warm.svg" alt="">Taskleiste</div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="head">
+          <div class="title-wrap"><span class="num">4</span><h2>Geometrischer Wald</h2></div>
+          <span class="tag">modern & markant</span>
+        </div>
+        <p class="desc">Drei gestaffelte Bäume als klare geometrische Form. Wirkt modern, passt gut zur Wald-Idee und hebt sich auf dem Desktop ab.</p>
+        <div class="preview"><img src="icons/vorschlag-4-wald-geometrisch.svg" alt="Vorschlag 4"></div>
+        <div class="sizes">
+          <div class="size"><img src="icons/vorschlag-4-wald-geometrisch.svg" width="64" height="64" alt=""><span>64 px</span></div>
+          <div class="size"><img src="icons/vorschlag-4-wald-geometrisch.svg" width="48" height="48" alt=""><span>48 px</span></div>
+          <div class="size"><img src="icons/vorschlag-4-wald-geometrisch.svg" width="32" height="32" alt=""><span>32 px</span></div>
+          <div class="size"><img src="icons/vorschlag-4-wald-geometrisch.svg" width="16" height="16" alt=""><span>16 px</span></div>
+        </div>
+        <div class="bg-row">
+          <div class="bg-sample bg-light"><img src="icons/vorschlag-4-wald-geometrisch.svg" alt="">Hell</div>
+          <div class="bg-sample bg-dark"><img src="icons/vorschlag-4-wald-geometrisch.svg" alt="">Dunkel</div>
+          <div class="bg-sample bg-taskbar"><img src="icons/vorschlag-4-wald-geometrisch.svg" alt="">Taskleiste</div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="head">
+          <div class="title-wrap"><span class="num">5</span><h2>Baum mit Glow</h2></div>
+          <span class="tag">ruhig & atmosphärisch</span>
+        </div>
+        <p class="desc">Weicher runder Baum mit warmem Lichtschein. Transportiert Fokus, Ruhe und „Zeit für mich“ – etwas atmosphärischer als die anderen.</p>
+        <div class="preview"><img src="icons/vorschlag-5-baum-glow.svg" alt="Vorschlag 5"></div>
+        <div class="sizes">
+          <div class="size"><img src="icons/vorschlag-5-baum-glow.svg" width="64" height="64" alt=""><span>64 px</span></div>
+          <div class="size"><img src="icons/vorschlag-5-baum-glow.svg" width="48" height="48" alt=""><span>48 px</span></div>
+          <div class="size"><img src="icons/vorschlag-5-baum-glow.svg" width="32" height="32" alt=""><span>32 px</span></div>
+          <div class="size"><img src="icons/vorschlag-5-baum-glow.svg" width="16" height="16" alt=""><span>16 px</span></div>
+        </div>
+        <div class="bg-row">
+          <div class="bg-sample bg-light"><img src="icons/vorschlag-5-baum-glow.svg" alt="">Hell</div>
+          <div class="bg-sample bg-dark"><img src="icons/vorschlag-5-baum-glow.svg" alt="">Dunkel</div>
+          <div class="bg-sample bg-taskbar"><img src="icons/vorschlag-5-baum-glow.svg" alt="">Taskleiste</div>
+        </div>
+      </article>
+    </div>
+
+    <div class="note">
+      <strong>Nächster Schritt:</strong> Sag mir einfach, welcher Vorschlag (oder welche Mischung) dir gefällt. Ich kann den gewählten Entwurf dann als App-Icon übernehmen und mit <code>npx tauri icon</code> alle Windows-/Tauri-Iconformate neu erzeugen.
+    </div>
+  </div>
+</body>
+</html>

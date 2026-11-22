@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg3" x1="0" y1="0" x2="0.2" y2="1">
+      <stop offset="0%" stop-color="#FFFDF8"/>
+      <stop offset="100%" stop-color="#F0E8D8"/>
+    </linearGradient>
+    <linearGradient id="stem3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5E8B63"/>
+      <stop offset="100%" stop-color="#3E6548"/>
+    </linearGradient>
+    <linearGradient id="leaf3a" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#78A87D"/>
+      <stop offset="100%" stop-color="#4A7754"/>
+    </linearGradient>
+    <linearGradient id="leaf3b" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8BB990"/>
+      <stop offset="100%" stop-color="#56805F"/>
+    </linearGradient>
+    <filter id="soft3" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#7A6545" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="115" fill="url(#bg3)"/>
+  <circle cx="256" cy="268" r="150" fill="#E8F0E2" opacity="0.7"/>
+  <g filter="url(#soft3)">
+    <!-- Boden -->
+    <path d="M128 362 C170 340 210 332 256 332 C302 332 342 340 384 362 C348 378 304 386 256 386 C208 386 164 378 128 362 Z" fill="#DCCEB6"/>
+    <!-- Stiel -->
+    <path d="M256 356 C256 356 252 290 256 244" fill="none" stroke="url(#stem3)" stroke-width="14" stroke-linecap="round"/>
+    <!-- Blätter -->
+    <path d="M256 286 C256 286 214 278 188 244 C174 224 178 198 200 190 C228 180 252 204 256 236" fill="url(#leaf3a)"/>
+    <path d="M256 252 C256 252 294 244 320 210 C334 190 330 164 308 156 C280 146 258 170 256 202" fill="url(#leaf3b)"/>
+    <!-- kleines oberes Blatt -->
+    <path d="M256 238 C256 238 236 214 242 188 C246 172 256 162 256 162 C256 162 266 172 270 188 C276 214 256 238 256 238 Z" fill="#6F9E74"/>
+  </g>
+</svg>
