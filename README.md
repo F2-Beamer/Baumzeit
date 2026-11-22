@@ -1,0 +1,79 @@
+# Baumzeit
+
+Ruhiger Fokus-Timer für Windows 11: Während des Lernens wächst ein Baum live mit, am Ende wird er in deinem eigenen Wald gepflanzt. Nichts stirbt, jede Minute zählt – alle Daten bleiben lokal.
+
+## Funktionen
+
+- **Pomodoro (25/5, anpassbar) oder freier Timer** – umschaltbar
+- **Live-Wachstum** in vier Stufen, Pause/Weiter ohne Zeitdrift
+- **Wald** mit Tagesgruppen, Baumgröße nach tatsächlicher Lernzeit
+- **6 Baumarten**, freigeschaltet über Gesamtstunden (Eiche, Birke, Tanne, Ahorn, Kirsche, Ulme)
+- **Statistik**: Heute, Woche, Gesamt, Streak und 7-Tage-Balkendiagramm
+- **Hell/Dunkel/System**, dezenter Glockenton am Sessionende
+- **Mini-Modus** (immer im Vordergrund) und **Tray**: Schließen legt die App in den Tray, der Timer läuft weiter
+- **Autostart**, Wiederherstellung einer laufenden Session nach Neustart
+- Installer und portable EXE
+
+## Bedienung
+
+| Aktion | Weg |
+|---|---|
+| Session starten / pausieren | Button oder `Leertaste` |
+| Mini-Modus | Einstellungen, Tray-Menü oder `Strg+M` |
+| Hauptfenster öffnen | Klick auf das Mini-Fenster, Tray-Icon oder Tray-Menü |
+| Beenden | Tray-Menü „Beenden“ (Schließen legt nur in den Tray) |
+| Vorzeitiges Beenden | „Session beenden“ zweimal klicken (Sicherheitsabfrage) |
+
+## Entwicklung
+
+Voraussetzungen: Node.js, Rust (MSVC-Toolchain), WebView2.
+
+```powershell
+npm install
+npm run dev            # nur Frontend im Browser
+npm run tauri dev      # komplette Desktop-App
+npm run check          # Logiktests (Statistik, Bäume, Zustand)
+```
+
+Rust prüfen:
+
+```powershell
+cd src-tauri
+cargo check
+```
+
+## Release bauen
+
+```powershell
+npm run tauri build
+```
+
+Artefakte:
+
+- Installer: `src-tauri/target/release/bundle/nsis/Baumzeit_0.1.0_x64-setup.exe`
+- Portable: `src-tauri/target/release/baumzeit.exe`
+
+## Daten
+
+- Speicherort: `%APPDATA%\Baumzeit\wald.json`
+- Beim Schreiben wird zuerst `wald.json.bak` angelegt, dann atomar über eine temporäre Datei ersetzt.
+- Schema-Version im JSON: `1`
+- Es gibt kein Konto, keine Cloud und keine Telemetrie.
+
+## Projektstruktur
+
+```
+index.html              Oberfläche (Haupt- und Mini-Ansicht)
+src/main.js             Bootstrap, Auswahl Haupt/Mini
+src/app.js              Zustand, Timer, Rendering, Tray-/Mini-Sync
+src/trees.js            prozedurale Baum-SVGs, Stufen, Größen
+src/stats.js            Tages-/Wochen-/Streak-Auswertung
+src/storage.js          Tauri-Commands bzw. localStorage-Fallback
+src/sound.js            WebAudio-Glocke
+src/styles.css          Design-System (hell/dunkel)
+src-tauri/src/lib.rs    Commands, Tray, Fenster, Persistenz
+design/preview.html     freigegebene Design-Vorschau
+PLAN.md                 Spezifikation und Meilensteine
+tests/check.mjs         Logiktests
+scripts/make-icon.mjs   erzeugt das Quell-Icon
+```

@@ -1,0 +1,847 @@
+﻿<!doctype html>
+<html lang="de" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Baumzeit – Designvorschau</title>
+<style>
+  :root {
+    --font: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+    --bg-grad-a: #fbf9f4;
+    --bg-grad-b: #f2efe6;
+    --surface: rgba(255, 253, 248, 0.93);
+    --surface-solid: #fffdf8;
+    --surface-2: #f3f0e8;
+    --border: #ddd6c6;
+    --border-strong: #cec6b4;
+    --text: #26312a;
+    --text-soft: #45524a;
+    --muted: #6d786f;
+    --accent: #3f6d4e;
+    --accent-hover: #345c41;
+    --accent-soft: #e3ecdd;
+    --accent-ink: #f6fbf5;
+    --glow: rgba(108, 154, 116, 0.16);
+    --shadow: 0 20px 48px rgba(44, 54, 48, 0.12), 0 2px 6px rgba(44, 54, 48, 0.05);
+    --shadow-sm: 0 1px 2px rgba(44, 54, 48, 0.06), 0 4px 12px rgba(44, 54, 48, 0.05);
+    --radius: 16px;
+    --bar: #cfdccd;
+    --bar-hover: #b9cbb7;
+    --mini-bg: #22312b;
+    --mini-text: #eef4ee;
+    --mini-muted: #9fb3a5;
+  }
+  html[data-theme="dark"] {
+    --bg-grad-a: #1e2420;
+    --bg-grad-b: #171b18;
+    --surface: rgba(38, 45, 40, 0.72);
+    --surface-solid: #262d28;
+    --surface-2: #2e3630;
+    --border: #353e37;
+    --border-strong: #414b43;
+    --text: #e7ece6;
+    --text-soft: #c3ccc3;
+    --muted: #94a094;
+    --accent: #6ea87e;
+    --accent-hover: #7cb88c;
+    --accent-soft: #2c3b31;
+    --accent-ink: #14201a;
+    --glow: rgba(104, 160, 118, 0.16);
+    --shadow: 0 22px 50px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 16px rgba(0, 0, 0, 0.22);
+    --bar: #3a453c;
+    --bar-hover: #475347;
+    --mini-bg: #2b3530;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: none; }
+  body {
+    font-family: var(--font);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+  button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+  .stage { max-width: 720px; margin: 0 auto; }
+
+  .window {
+    height: 648px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    background: linear-gradient(180deg, var(--bg-grad-a), var(--bg-grad-b));
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .titlebar {
+    height: 46px;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px 0 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .brand { display: flex; align-items: center; gap: 9px; font-weight: 600; font-size: 13.5px; letter-spacing: 0.01em; }
+  .brand-mark {
+    width: 26px; height: 26px;
+    display: grid; place-items: center;
+    border-radius: 8px;
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+  .brand-mark svg { width: 17px; height: 17px; }
+  .titlebar-right { display: flex; align-items: center; gap: 6px; }
+  .icon-btn {
+    width: 30px; height: 30px;
+    display: grid; place-items: center;
+    border-radius: 8px;
+    color: var(--muted);
+    transition: background 0.15s, color 0.15s;
+  }
+  .icon-btn:hover { background: var(--surface-2); color: var(--text); }
+  .win-controls { display: flex; align-items: center; margin-left: 4px; }
+  .win-controls span {
+    width: 34px; height: 30px;
+    display: grid; place-items: center;
+    border-radius: 6px;
+    color: var(--muted);
+    transition: background 0.15s, color 0.15s;
+  }
+  .win-controls span:hover { background: var(--surface-2); color: var(--text); }
+  .win-controls span.close:hover { background: #c94a45; color: #fff; }
+
+  .tabs {
+    flex: 0 0 auto;
+    display: flex;
+    gap: 2px;
+    padding: 10px 16px 0;
+  }
+  .tab {
+    padding: 7px 13px 8px;
+    border-radius: 9px 9px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+  }
+  .tab:hover { color: var(--text-soft); background: rgba(120, 130, 120, 0.06); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+
+  .app-body { flex: 1 1 auto; overflow-y: auto; padding: 16px 18px 20px; display: flex; flex-direction: column; }
+  .app-body::-webkit-scrollbar { width: 10px; }
+  .app-body::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 8px; border: 3px solid transparent; background-clip: padding-box; }
+  .panel { display: none; }
+  .panel.active { display: block; flex: 1 1 auto; }
+  #panel-timer.active { display: flex; flex-direction: column; justify-content: center; }
+  @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    padding: 16px;
+  }
+
+  .timer-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 14px; align-items: start; }
+  @media (max-width: 620px) { .timer-grid { grid-template-columns: 1fr; } }
+
+  .timer-card { display: flex; flex-direction: column; align-items: center; padding: 16px 18px 18px; }
+  .mode-row { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .seg {
+    display: inline-flex;
+    padding: 3px;
+    gap: 2px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .seg-btn {
+    padding: 5px 11px;
+    border-radius: 7px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--muted);
+    transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+  }
+  .seg-btn.active { background: var(--surface-solid); color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,0.08); font-weight: 600; }
+  .mode-note { font-size: 11.5px; color: var(--muted); }
+
+  .timer-tree {
+    position: relative;
+    width: 100%;
+    height: 236px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    margin-top: 6px;
+  }
+  .timer-tree::before {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: -6px;
+    height: 216px;
+    background: radial-gradient(ellipse at 50% 78%, var(--glow) 0%, transparent 68%);
+    pointer-events: none;
+  }
+  .timer-tree .big-tree { position: relative; z-index: 1; }
+  .timer-tree svg { height: 224px; width: auto; display: block; }
+  .sway { transform-box: fill-box; transform-origin: 50% 100%; animation: sway 7s ease-in-out infinite; }
+  @keyframes sway { 0%, 100% { transform: rotate(-0.7deg); } 50% { transform: rotate(0.8deg); } }
+  .grow-in { animation: grow 0.7s cubic-bezier(0.22, 0.9, 0.3, 1) both; }
+  @keyframes grow { from { transform: scale(0.95) translateY(4px); } to { transform: none; } }
+
+  .time {
+    font-size: 42px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+    margin-top: 2px;
+  }
+  .time-label { font-size: 12px; color: var(--muted); margin-top: 1px; }
+
+  .progress { width: 100%; margin-top: 14px; }
+  .progress-track { height: 6px; border-radius: 4px; background: var(--surface-2); overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #6fa47c, var(--accent)); transition: width 0.6s ease; }
+  .progress-meta { display: flex; justify-content: space-between; margin-top: 6px; font-size: 11.5px; color: var(--muted); }
+
+  .actions { display: flex; gap: 8px; width: 100%; margin-top: 14px; }
+  .btn {
+    flex: 1;
+    height: 38px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    font-size: 13.5px;
+    font-weight: 600;
+    transition: background 0.15s, border-color 0.15s, transform 0.06s;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); }
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-ghost { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-soft); }
+  .btn-ghost:hover { border-color: var(--border-strong); background: var(--surface-solid); }
+  .btn svg { width: 14px; height: 14px; }
+  .timer-hint { font-size: 11.5px; color: var(--muted); margin-top: 10px; }
+
+  .side-stack { display: flex; flex-direction: column; gap: 14px; }
+  .card-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
+  .card-title { font-size: 13px; font-weight: 600; letter-spacing: 0.01em; }
+  .card-sub { font-size: 11.5px; color: var(--muted); }
+  .mini-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .mini-stat { text-align: left; }
+  .mini-stat b { display: block; font-size: 19px; font-weight: 600; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+  .mini-stat span { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); }
+
+  .tree-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 4px; padding: 2px 2px 0; min-height: 64px; }
+  .tree-row .slot { display: flex; align-items: flex-end; justify-content: center; }
+  .tree-row svg { display: block; width: auto; }
+  .ground-strip { height: 1px; background: var(--border); margin-top: 2px; }
+
+  .tip { display: flex; gap: 10px; align-items: flex-start; }
+  .tip-icon { flex: 0 0 auto; width: 28px; height: 28px; border-radius: 9px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; }
+  .tip-icon svg { width: 15px; height: 15px; }
+  .tip p { margin: 0; font-size: 12px; color: var(--text-soft); line-height: 1.5; }
+
+  .section-head { display: flex; align-items: center; justify-content: space-between; margin: 2px 2px 10px; }
+  .section-title { font-size: 15px; font-weight: 600; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--border); font-size: 11.5px; color: var(--muted); font-weight: 500; }
+
+  .day { margin-bottom: 12px; }
+  .day-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 6px; padding: 0 2px; }
+  .day-name { font-size: 12.5px; font-weight: 600; }
+  .day-meta { font-size: 11px; color: var(--muted); }
+  .day-strip {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    padding: 10px 12px 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    min-height: 84px;
+    overflow: hidden;
+  }
+  .day-strip .slot { display: flex; align-items: flex-end; }
+  .day-strip svg { display: block; width: auto; }
+  .day-strip .empty { font-size: 11.5px; color: var(--muted); padding: 16px 4px; }
+
+  .species { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; }
+  .sp { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 11px; background: var(--surface); border: 1px solid var(--border); }
+  .sp svg { height: 30px; width: auto; flex: 0 0 auto; }
+  .sp-name { font-size: 12px; font-weight: 600; }
+  .sp-meta { font-size: 10.5px; color: var(--muted); }
+  .sp.locked { opacity: 0.5; }
+  .sp.locked .sp-meta { display: flex; align-items: center; gap: 4px; }
+  .sp.locked svg.lock { height: 9px; width: 9px; }
+
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  @media (max-width: 620px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+  .stat { padding: 12px 13px; }
+  .stat b { display: block; font-size: 21px; font-weight: 600; letter-spacing: -0.015em; font-variant-numeric: tabular-nums; }
+  .stat span { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); }
+
+  .chart-card { margin-top: 14px; }
+  .chart { height: 150px; display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; padding: 10px 4px 0; border-bottom: 1px solid var(--border); }
+  .col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
+  .col .val { font-size: 10px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .bar { width: 100%; max-width: 26px; border-radius: 6px 6px 3px 3px; background: var(--bar); transition: background 0.15s; }
+  .col.today .bar { background: linear-gradient(180deg, #7cb489, var(--accent)); }
+  .col.today .val { color: var(--accent); font-weight: 600; }
+  .chart-labels { display: flex; justify-content: space-between; gap: 8px; padding: 7px 4px 0; }
+  .chart-labels span { flex: 1; text-align: center; font-size: 10.5px; color: var(--muted); }
+  .chart-labels span.today { color: var(--accent); font-weight: 600; }
+
+  .settings-group { margin-bottom: 12px; }
+  .settings-group:last-child { margin-bottom: 0; }
+  .group-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 600; margin: 0 4px 7px; }
+  .row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  .row:first-of-type { border-top-left-radius: 12px; border-top-right-radius: 12px; }
+  .row:last-child { border-bottom: none; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; }
+  .row-label { font-size: 13px; font-weight: 500; }
+  .row-desc { font-size: 11.5px; color: var(--muted); margin-top: 1px; }
+  .row-control { flex: 0 0 auto; }
+  select {
+    appearance: none;
+    font: inherit;
+    font-size: 12.5px;
+    color: var(--text);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 6px 28px 6px 10px;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%2379837a' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 9px center;
+  }
+  .switch { display: inline-flex; cursor: pointer; }
+  .switch input { position: absolute; opacity: 0; width: 0; height: 0; }
+  .track { width: 38px; height: 22px; border-radius: 999px; background: var(--border-strong); position: relative; transition: background 0.18s; }
+  .track::after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.2); transition: transform 0.18s; }
+  .switch input:checked + .track { background: var(--accent); }
+  .switch input:checked + .track::after { transform: translateX(16px); }
+  .path-box { font-family: "Cascadia Mono", Consolas, monospace; font-size: 11.5px; color: var(--text-soft); background: var(--surface-2); border: 1px solid var(--border); border-radius: 9px; padding: 7px 10px; }
+  .btn-small { padding: 6px 12px; border-radius: 9px; font-size: 12px; font-weight: 600; background: var(--surface-2); border: 1px solid var(--border); color: var(--text-soft); }
+  .btn-small:hover { background: var(--surface-solid); border-color: var(--border-strong); }
+
+  .mini-section { margin-top: 16px; }
+  .mini-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); font-weight: 600; margin: 0 0 7px 2px; }
+  .mini {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 16px;
+    background: var(--mini-bg);
+    color: var(--mini-text);
+    box-shadow: 0 14px 30px rgba(20, 30, 24, 0.28);
+    border: 1px solid rgba(255,255,255,0.07);
+    max-width: 340px;
+  }
+  .mini-tree { width: 46px; height: 52px; display: flex; align-items: flex-end; justify-content: center; flex: 0 0 auto; }
+  .mini-tree svg { height: 48px; width: auto; display: block; }
+  .mini-body { flex: 1 1 auto; min-width: 0; }
+  .mini-time { font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; line-height: 1.1; }
+  .mini-sub { font-size: 10.5px; color: var(--mini-muted); margin-top: 1px; }
+  .mini-btn { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,0.1); color: var(--mini-text); transition: background 0.15s; }
+  .mini-btn:hover { background: rgba(255,255,255,0.18); }
+  .mini-btn svg { width: 13px; height: 13px; }
+  .mini-hint { font-size: 11.5px; color: var(--muted); margin-top: 7px; margin-left: 2px; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="window">
+    <header class="titlebar">
+      <div class="brand"><span class="brand-mark" id="brandMark"></span><span>Baumzeit</span></div>
+      <div class="titlebar-right">
+        <button class="icon-btn" id="themeBtn" title="Hell / Dunkel wechseln" aria-label="Design wechseln"></button>
+        <div class="win-controls">
+          <span title="Minimieren"><svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 5h6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span>
+          <span title="Maximieren"><svg width="10" height="10" viewBox="0 0 10 10"><rect x="2.5" y="2.5" width="5" height="5" rx="1" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></span>
+          <span class="close" title="In den Tray"><svg width="10" height="10" viewBox="0 0 10 10"><path d="M2.5 2.5l5 5M7.5 2.5l-5 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span>
+        </div>
+      </div>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab active" data-tab="timer">Timer</button>
+      <button class="tab" data-tab="wald">Wald</button>
+      <button class="tab" data-tab="stats">Statistik</button>
+      <button class="tab" data-tab="settings">Einstellungen</button>
+    </nav>
+
+    <main class="app-body">
+      <section class="panel active" id="panel-timer">
+        <div class="timer-grid">
+          <div class="card timer-card">
+            <div class="mode-row">
+              <div class="seg">
+                <button class="seg-btn active" data-mode="pomodoro">Pomodoro</button>
+                <button class="seg-btn" data-mode="frei">Frei</button>
+              </div>
+              <div class="mode-note">25 Min lernen · 5 Min Pause</div>
+            </div>
+            <div class="timer-tree">
+              <div class="big-tree grow-in" data-tree="eiche" data-stage="3" data-size="224" data-sway="1" data-seed="4"></div>
+            </div>
+            <div class="time" id="mainTime">07:12</div>
+            <div class="time-label" id="mainTimeLabel">verbleibend · Fokus</div>
+            <div class="progress">
+              <div class="progress-track"><div class="progress-fill" id="mainBar" style="width:71%"></div></div>
+              <div class="progress-meta"><span id="mainElapsed">17 von 25 Min</span><span id="mainPct">71 %</span></div>
+            </div>
+            <div class="actions">
+              <button class="btn btn-primary" id="pauseBtn">
+                <svg viewBox="0 0 14 14" fill="currentColor"><rect x="3" y="2" width="3" height="10" rx="1"/><rect x="8" y="2" width="3" height="10" rx="1"/></svg>
+                <span>Pause</span>
+              </button>
+              <button class="btn btn-ghost">Session beenden</button>
+            </div>
+            <div class="timer-hint">Nach der Session startet die Pause automatisch</div>
+          </div>
+
+          <div class="side-stack">
+            <div class="card">
+              <div class="card-head"><span class="card-title">Heute</span><span class="card-sub">21. Nov</span></div>
+              <div class="mini-stats">
+                <div class="mini-stat"><b>50<span style="font-size:12px;font-weight:500"> Min</span></b><span>Lernzeit</span></div>
+                <div class="mini-stat"><b>2</b><span>Bäume</span></div>
+                <div class="mini-stat"><b>6</b><span>Streak</span></div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head"><span class="card-title">Zuletzt gepflanzt</span><span class="card-sub">heute</span></div>
+              <div class="tree-row" data-forest="recent"></div>
+              <div class="ground-strip"></div>
+            </div>
+
+            <div class="card">
+              <div class="tip">
+                <span class="tip-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3c-5 0-9 2.5-9 8 0 0 1 1 2 1 5.5 0 7-4.5 7-9Z"/><path d="M4 12c1.5-3 4-5 7-6"/></svg></span>
+                <p>Kurze Sessions pflanzen Setzlinge, lange werden zu großen Bäumen. Jede Minute zählt — nichts geht verloren.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-wald">
+        <div class="section-head">
+          <span class="section-title">Dein Wald</span>
+          <span class="chip">37 Std · 58 Bäume</span>
+        </div>
+
+        <div class="day">
+          <div class="day-head"><span class="day-name">Heute</span><span class="day-meta">50 Min · 2 Bäume</span></div>
+          <div class="day-strip" data-forest="d0"></div>
+        </div>
+        <div class="day">
+          <div class="day-head"><span class="day-name">Gestern</span><span class="day-meta">1 Std 15 · 4 Bäume</span></div>
+          <div class="day-strip" data-forest="d1"></div>
+        </div>
+        <div class="day">
+          <div class="day-head"><span class="day-name">Donnerstag</span><span class="day-meta">1 Std 30 · 3 Bäume</span></div>
+          <div class="day-strip" data-forest="d2"></div>
+        </div>
+
+        <div class="section-head" style="margin-top:18px">
+          <span class="section-title" style="font-size:13px">Baumarten</span>
+          <span class="card-sub">freigeschaltet nach Gesamtstunden</span>
+        </div>
+        <div class="species" id="speciesGrid"></div>
+      </section>
+
+      <section class="panel" id="panel-stats">
+        <div class="stats-grid">
+          <div class="card stat"><b>50 Min</b><span>Heute</span></div>
+          <div class="card stat"><b>5 Std 42</b><span>Diese Woche</span></div>
+          <div class="card stat"><b>37 Std</b><span>Gesamt</span></div>
+          <div class="card stat"><b>6 Tage</b><span>Streak</span></div>
+        </div>
+
+        <div class="card chart-card">
+          <div class="card-head"><span class="card-title">Letzte 7 Tage</span><span class="card-sub">Lernzeit pro Tag</span></div>
+          <div class="chart" id="chart"></div>
+          <div class="chart-labels" id="chartLabels"></div>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-settings">
+        <div class="settings-group">
+          <div class="group-title">Timer</div>
+          <div class="card" style="padding:0">
+            <div class="row">
+              <div><div class="row-label">Modus</div><div class="row-desc">Pomodoro-Blöcke oder freier Timer</div></div>
+              <div class="row-control"><div class="seg"><button class="seg-btn active">Pomodoro</button><button class="seg-btn">Frei</button></div></div>
+            </div>
+            <div class="row">
+              <div><div class="row-label">Lernzeit</div><div class="row-desc">Länge einer Fokus-Session</div></div>
+              <div class="row-control"><select><option>15 Minuten</option><option selected>25 Minuten</option><option>50 Minuten</option></select></div>
+            </div>
+            <div class="row">
+              <div><div class="row-label">Pause</div><div class="row-desc">Startet automatisch nach der Session</div></div>
+              <div class="row-control"><select><option>5 Minuten</option><option>10 Minuten</option><option>15 Minuten</option></select></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <div class="group-title">Verhalten</div>
+          <div class="card" style="padding:0">
+            <div class="row">
+              <div><div class="row-label">Beim Schließen in den Tray</div><div class="row-desc">Timer läuft im Hintergrund weiter</div></div>
+              <div class="row-control"><label class="switch"><input type="checkbox" checked><span class="track"></span></label></div>
+            </div>
+            <div class="row">
+              <div><div class="row-label">Mit Windows starten</div><div class="row-desc">Baumzeit öffnet sich beim Anmelden</div></div>
+              <div class="row-control"><label class="switch"><input type="checkbox"><span class="track"></span></label></div>
+            </div>
+            <div class="row">
+              <div><div class="row-label">Mini-Modus im Vordergrund</div><div class="row-desc">Kleines Fenster bleibt über anderen Programmen</div></div>
+              <div class="row-control"><label class="switch"><input type="checkbox" checked><span class="track"></span></label></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <div class="group-title">Darstellung</div>
+          <div class="card" style="padding:0">
+            <div class="row">
+              <div><div class="row-label">Design</div><div class="row-desc">Helles oder dunkles Erscheinungsbild</div></div>
+              <div class="row-control"><div class="seg" id="themeSeg"><button class="seg-btn active" data-set="light">Hell</button><button class="seg-btn" data-set="dark">Dunkel</button><button class="seg-btn" data-set="system">System</button></div></div>
+            </div>
+            <div class="row">
+              <div><div class="row-label">Ton am Sessionende</div><div class="row-desc">Dezenter Glockenton</div></div>
+              <div class="row-control"><label class="switch"><input type="checkbox" checked><span class="track"></span></label></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <div class="group-title">Daten</div>
+          <div class="card" style="padding:0">
+            <div class="row">
+              <div style="min-width:0"><div class="row-label">Speicherort</div><div class="path-box" style="margin-top:6px">%APPDATA%\Baumzeit\wald.json</div></div>
+              <div class="row-control"><button class="btn-small">Ordner öffnen</button></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="mini-section">
+    <div class="mini-label">Mini-Modus</div>
+    <div class="mini">
+      <div class="mini-tree" id="miniTree"></div>
+      <div class="mini-body">
+        <div class="mini-time" id="miniTime">07:12</div>
+        <div class="mini-sub">Fokus · 25 Min</div>
+      </div>
+      <button class="mini-btn" id="miniPause" title="Pause">
+        <svg viewBox="0 0 14 14" fill="currentColor"><rect x="3" y="2" width="3" height="10" rx="1"/><rect x="8" y="2" width="3" height="10" rx="1"/></svg>
+      </button>
+    </div>
+    <div class="mini-hint">Immer im Vordergrund · Klick öffnet das Hauptfenster</div>
+  </div>
+</div>
+
+<script>
+const SPECIES = {
+  eiche:   { c: ['#4a7352', '#5d8a63', '#74a07a', '#8db392'], bark: '#7b5c45', kind: 'round', dark: '#3a5a43' },
+  birke:   { c: ['#7a9e5f', '#8fb474', '#a5c98a', '#bcd9a3'], bark: '#ddd6c6', kind: 'birch', dark: '#64854d' },
+  tanne:   { c: ['#3f684c', '#51795c', '#648c6e', '#7a9e82'], bark: '#6b523f', kind: 'conifer', dark: '#31523b' },
+  ahorn:   { c: ['#668752', '#7b9c65', '#90b079', '#a6c48d'], bark: '#7f5f48', kind: 'round', dark: '#4f6b3f' },
+  kirsche: { c: ['#c28686', '#d39c9a', '#e2b2ad', '#efc9c2'], bark: '#86675a', kind: 'round', dark: '#a06a6a' },
+  ulme:    { c: ['#5d7f57', '#719666', '#86ab7a', '#9cbf8e'], bark: '#6f5643', kind: 'round', dark: '#48613f' }
+};
+
+function mulberry(seed) {
+  let t = seed >>> 0;
+  return function () {
+    t += 0x6D2B79F5;
+    let r = Math.imul(t ^ (t >>> 15), 1 | t);
+    r ^= r + Math.imul(r ^ (r >>> 7), 61 | r);
+    return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function treeSVG(sp, stage, seed, cls) {
+  const pal = SPECIES[sp] || SPECIES.eiche;
+  const rnd = mulberry(seed * 7919 + 13);
+  const base = 132;
+  const ground = '<ellipse cx="50" cy="' + (base + 1) + '" rx="' + (stage < 2 ? 11 : 23) + '" ry="4.5" fill="rgba(46,56,48,.10)"/>';
+  let body = '';
+
+  if (stage < 2) {
+    const h = stage === 0 ? 10 : 26;
+    body += '<path d="M50 ' + base + ' L50 ' + (base - h) + '" stroke="' + pal.c[1] + '" stroke-width="2.6" stroke-linecap="round" fill="none"/>';
+    const leaves = stage === 0
+      ? [[44, base - 6, -24], [56, base - 4, 24]]
+      : [[42, base - 14, -30], [58, base - 18, 30], [45, base - 24, -18], [56, base - 22, 20]];
+    leaves.forEach(function (l) {
+      body += '<ellipse cx="' + l[0] + '" cy="' + l[1] + '" rx="7.5" ry="4.2" fill="' + pal.c[1] + '" transform="rotate(' + l[2] + ' ' + l[0] + ' ' + l[1] + ')"/>';
+    });
+    if (stage === 1) body += '<ellipse cx="50" cy="' + (base - 30) + '" rx="4.6" ry="7" fill="' + pal.c[2] + '"/>';
+  } else if (pal.kind === 'conifer') {
+    const h = stage === 2 ? 34 : stage === 3 ? 48 : 62;
+    body += '<path d="M48.6 ' + base + ' L49.6 ' + (base - h) + ' L50.4 ' + (base - h) + ' L51.4 ' + base + ' Z" fill="' + pal.bark + '"/>';
+    const layers = stage === 2
+      ? [[base - 24, base - 52, 16]]
+      : stage === 3
+        ? [[base - 22, base - 58, 20], [base - 42, base - 76, 15]]
+        : [[base - 18, base - 56, 24], [base - 38, base - 78, 19], [base - 58, base - 100, 14]];
+    layers.forEach(function (l, i) {
+      body += '<path d="M' + (50 - l[2]) + ' ' + l[0] + ' Q50 ' + (l[0] + 6) + ' ' + (50 + l[2]) + ' ' + l[0] + ' L50 ' + l[1] + ' Z" fill="' + pal.c[Math.min(i, 3)] + '"/>';
+    });
+  } else if (pal.kind === 'birch') {
+    const h = stage === 2 ? 38 : stage === 3 ? 52 : 66;
+    const top = base - h;
+    body += '<path d="M48.9 ' + base + ' C49.2 ' + (base - 16) + ' 49.3 ' + (top + 18) + ' 49.5 ' + (top + 3) + ' L50.5 ' + (top + 3) + ' C50.7 ' + (top + 18) + ' 50.8 ' + (base - 16) + ' 51.1 ' + base + ' Z" fill="' + pal.bark + '"/>';
+    if (stage >= 3) {
+      body += '<path d="M49.4 ' + (base - 14) + ' l2.4 -2" stroke="#9a927f" stroke-width="1.3" stroke-linecap="round"/>';
+      body += '<path d="M49.5 ' + (base - 26) + ' l2.2 -1.8" stroke="#9a927f" stroke-width="1.3" stroke-linecap="round"/>';
+    }
+    const blobs = stage === 2
+      ? [[50, top - 8, 13]]
+      : stage === 3
+        ? [[50, top - 12, 17], [39, top + 1, 11], [61, top + 1, 11]]
+        : [[50, top - 16, 21], [36, top - 1, 14], [64, top - 1, 14], [43, top - 24, 13], [57, top - 24, 13]];
+    blobs.forEach(function (b) {
+      body += '<ellipse cx="' + (b[0] + 1.6).toFixed(1) + '" cy="' + (b[1] + 3).toFixed(1) + '" rx="' + b[2] + '" ry="' + (b[2] * 0.92).toFixed(1) + '" fill="' + pal.dark + '"/>';
+    });
+    blobs.forEach(function (b, i) {
+      body += '<ellipse cx="' + b[0] + '" cy="' + b[1] + '" rx="' + b[2] + '" ry="' + (b[2] * 0.92).toFixed(1) + '" fill="' + pal.c[i % 4] + '"/>';
+    });
+  } else {
+    const h = stage === 2 ? 36 : stage === 3 ? 50 : 64;
+    const top = base - h;
+    body += '<path d="M47.9 ' + base + ' C48.2 ' + (base - 18) + ' 48.6 ' + (top + 16) + ' 49.4 ' + (top + 3) + ' L50.6 ' + (top + 3) + ' C51.4 ' + (top + 16) + ' 51.8 ' + (base - 18) + ' 52.1 ' + base + ' Z" fill="' + pal.bark + '"/>';
+    if (stage >= 3) {
+      body += '<path d="M50 ' + (base - 26) + ' C55 ' + (base - 30) + ' 58 ' + (base - 34) + ' 61 ' + (base - 38) + '" stroke="' + pal.bark + '" stroke-width="2" stroke-linecap="round" fill="none"/>';
+      body += '<path d="M50 ' + (base - 20) + ' C45 ' + (base - 24) + ' 42 ' + (base - 28) + ' 39 ' + (base - 31) + '" stroke="' + pal.bark + '" stroke-width="2" stroke-linecap="round" fill="none"/>';
+    }
+    const blobs = stage === 2
+      ? [[50, top - 8, 14]]
+      : stage === 3
+        ? [[50, top - 12, 18], [38, top + 1, 12], [62, top + 1, 12], [50, top - 26, 12]]
+        : [[50, top - 14, 23], [34, top + 2, 15], [66, top + 2, 15], [42, top - 26, 14], [58, top - 26, 14], [50, top + 6, 14]];
+    blobs.forEach(function (b) {
+      body += '<ellipse cx="' + (b[0] + 1.8).toFixed(1) + '" cy="' + (b[1] + 3.4).toFixed(1) + '" rx="' + b[2].toFixed(1) + '" ry="' + (b[2] * 0.9).toFixed(1) + '" fill="' + pal.dark + '"/>';
+    });
+    blobs.forEach(function (b, i) {
+      const jx = (rnd() - 0.5) * 2.2;
+      const jy = (rnd() - 0.5) * 2.2;
+      body += '<ellipse cx="' + (b[0] + jx).toFixed(1) + '" cy="' + (b[1] + jy).toFixed(1) + '" rx="' + b[2].toFixed(1) + '" ry="' + (b[2] * 0.9).toFixed(1) + '" fill="' + pal.c[i % 4] + '"/>';
+    });
+    if (stage >= 3) {
+      body += '<ellipse cx="44" cy="' + (top - 30) + '" rx="6" ry="5" fill="' + pal.c[3] + '" opacity=".7"/>';
+      body += '<ellipse cx="58" cy="' + (top - 34) + '" rx="5" ry="4.5" fill="' + pal.c[3] + '" opacity=".6"/>';
+    }
+  }
+
+  return '<svg class="' + (cls || '') + '" viewBox="0 0 100 140" aria-hidden="true">' + ground + body + '</svg>';
+}
+
+document.querySelectorAll('[data-tree]').forEach(function (el) {
+  const sp = el.dataset.tree;
+  const st = parseInt(el.dataset.stage, 10);
+  const sz = parseInt(el.dataset.size, 10) || 60;
+  const seed = parseInt(el.dataset.seed, 10) || 1;
+  el.innerHTML = treeSVG(sp, st, seed, el.dataset.sway ? 'sway' : '');
+  const svg = el.querySelector('svg');
+  if (svg) { svg.style.height = sz + 'px'; svg.style.width = 'auto'; }
+});
+
+function forest(host, list) {
+  host.innerHTML = list.map(function (t) {
+    return '<span class="slot">' + treeSVG(t.sp, t.st, t.seed) + '</span>';
+  }).join('');
+  host.querySelectorAll('svg').forEach(function (svg, i) {
+    svg.style.height = list[i].h + 'px';
+  });
+}
+
+const forests = {
+  recent: [
+    { sp: 'eiche', st: 4, seed: 11, h: 54 },
+    { sp: 'birke', st: 3, seed: 12, h: 46 },
+    { sp: 'tanne', st: 4, seed: 13, h: 56 },
+    { sp: 'ahorn', st: 2, seed: 14, h: 38 },
+    { sp: 'eiche', st: 1, seed: 15, h: 26 }
+  ],
+  d0: [
+    { sp: 'eiche', st: 4, seed: 21, h: 66 },
+    { sp: 'kirsche', st: 3, seed: 22, h: 54 }
+  ],
+  d1: [
+    { sp: 'tanne', st: 4, seed: 31, h: 64 },
+    { sp: 'birke', st: 4, seed: 32, h: 62 },
+    { sp: 'ahorn', st: 3, seed: 33, h: 50 },
+    { sp: 'eiche', st: 2, seed: 34, h: 38 }
+  ],
+  d2: [
+    { sp: 'eiche', st: 4, seed: 41, h: 68 },
+    { sp: 'tanne', st: 3, seed: 42, h: 52 },
+    { sp: 'birke', st: 2, seed: 43, h: 36 }
+  ]
+};
+
+document.querySelectorAll('[data-forest]').forEach(function (el) {
+  const key = el.dataset.forest;
+  if (forests[key]) forest(el, forests[key]);
+});
+
+const speciesList = [
+  { id: 'eiche', name: 'Eiche', need: 0 },
+  { id: 'birke', name: 'Birke', need: 10 },
+  { id: 'tanne', name: 'Tanne', need: 25 },
+  { id: 'ahorn', name: 'Ahorn', need: 40 },
+  { id: 'kirsche', name: 'Kirsche', need: 60 },
+  { id: 'ulme', name: 'Ulme', need: 80 }
+];
+
+document.getElementById('speciesGrid').innerHTML = speciesList.map(function (s, i) {
+  const unlocked = s.need <= 37;
+  const lock = '<svg class="lock" viewBox="0 0 10 12" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="1.6" y="5" width="6.8" height="5.6" rx="1.4"/><path d="M3.2 5V3.4a1.8 1.8 0 0 1 3.6 0V5"/></svg>';
+  return '<div class="sp' + (unlocked ? '' : ' locked') + '">' +
+    treeSVG(s.id, unlocked ? 4 : 2, 50 + i) +
+    '<div><div class="sp-name">' + s.name + '</div><div class="sp-meta">' +
+    (unlocked ? 'freigeschaltet' : s.need + ' Std ' + lock) + '</div></div></div>';
+}).join('');
+
+const chartData = [
+  { d: 'Mo', v: 42 }, { d: 'Di', v: 75 }, { d: 'Mi', v: 30 },
+  { d: 'Do', v: 90 }, { d: 'Fr', v: 55 }, { d: 'Sa', v: 50, today: true }, { d: 'So', v: 0 }
+];
+const maxV = 90;
+document.getElementById('chart').innerHTML = chartData.map(function (c) {
+  const h = Math.round((c.v / maxV) * 118);
+  return '<div class="col' + (c.today ? ' today' : '') + '">' +
+    '<span class="val">' + (c.v ? c.v : '') + '</span>' +
+    '<div class="bar" style="height:' + Math.max(h, 2) + 'px"></div></div>';
+}).join('');
+document.getElementById('chartLabels').innerHTML = chartData.map(function (c) {
+  return '<span class="' + (c.today ? 'today' : '') + '">' + c.d + '</span>';
+}).join('');
+
+const brandMark = document.getElementById('brandMark');
+brandMark.innerHTML = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17.2V11"/><path d="M10 4 13.6 9H11.8L14.6 13.2H5.4L8.2 9H6.4Z" fill="currentColor" fill-opacity=".16"/></svg>';
+
+const miniTree = document.getElementById('miniTree');
+miniTree.innerHTML = treeSVG('eiche', 3, 4);
+miniTree.querySelector('svg').style.height = '48px';
+
+const sunIcon = '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="3.1"/><path d="M8 1.4v1.6M8 13v1.6M1.4 8h1.6M13 8h1.6M3.3 3.3l1.1 1.1M11.6 11.6l1.1 1.1M12.7 3.3l-1.1 1.1M4.4 11.6l-1.1 1.1"/></svg>';
+const moonIcon = '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 9.6A5.8 5.8 0 0 1 6.4 2.5 5.8 5.8 0 1 0 13.5 9.6Z"/></svg>';
+
+const themeBtn = document.getElementById('themeBtn');
+function applyTheme(t) {
+  document.documentElement.dataset.theme = t;
+  themeBtn.innerHTML = t === 'dark' ? moonIcon : sunIcon;
+  document.querySelectorAll('#themeSeg .seg-btn').forEach(function (b) {
+    b.classList.toggle('active', b.dataset.set === t);
+  });
+}
+themeBtn.addEventListener('click', function () {
+  applyTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark');
+});
+document.querySelectorAll('#themeSeg .seg-btn').forEach(function (b) {
+  b.addEventListener('click', function () { applyTheme(b.dataset.set === 'system' ? 'light' : b.dataset.set); });
+});
+applyTheme(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+document.querySelectorAll('.tab').forEach(function (tab) {
+  tab.addEventListener('click', function () {
+    document.querySelectorAll('.tab').forEach(function (t) { t.classList.remove('active'); });
+    document.querySelectorAll('.panel').forEach(function (p) { p.classList.remove('active'); });
+    tab.classList.add('active');
+    document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+  });
+});
+
+document.querySelectorAll('[data-mode]').forEach(function (b) {
+  b.addEventListener('click', function () {
+    b.parentElement.querySelectorAll('.seg-btn').forEach(function (x) { x.classList.remove('active'); });
+    b.classList.add('active');
+  });
+});
+
+const TOTAL = 25 * 60;
+let remaining = 7 * 60 + 12;
+let running = true;
+let lastStage = -1;
+
+function fmt(sec) {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+}
+
+function stageFor(progress) {
+  if (progress < 0.18) return 1;
+  if (progress < 0.45) return 2;
+  if (progress < 0.75) return 3;
+  return 4;
+}
+
+function renderTimer() {
+  const elapsed = TOTAL - remaining;
+  const p = Math.min(elapsed / TOTAL, 1);
+  document.getElementById('mainTime').textContent = fmt(remaining);
+  document.getElementById('miniTime').textContent = fmt(remaining);
+  document.getElementById('mainBar').style.width = (p * 100).toFixed(1) + '%';
+  document.getElementById('mainPct').textContent = Math.round(p * 100) + ' %';
+  document.getElementById('mainElapsed').textContent = Math.round(elapsed / 60) + ' von 25 Min';
+  document.getElementById('mainTimeLabel').textContent = running ? 'verbleibend · Fokus' : 'pausiert · Fokus';
+  const st = stageFor(p);
+  if (st !== lastStage) {
+    lastStage = st;
+    const host = document.querySelector('.big-tree');
+    host.innerHTML = treeSVG('eiche', st, 4, 'sway');
+    host.querySelector('svg').style.height = '224px';
+    host.querySelector('svg').style.width = 'auto';
+    miniTree.innerHTML = treeSVG('eiche', st, 4);
+    miniTree.querySelector('svg').style.height = '48px';
+  }
+}
+
+const pauseIcon = '<svg viewBox="0 0 14 14" fill="currentColor"><rect x="3" y="2" width="3" height="10" rx="1"/><rect x="8" y="2" width="3" height="10" rx="1"/></svg>';
+const playIcon = '<svg viewBox="0 0 14 14" fill="currentColor"><path d="M4 2.2v9.6c0 .6.7 1 1.2.7l7-4.8c.4-.3.4-.9 0-1.2l-7-4.8c-.5-.3-1.2.1-1.2.7Z"/></svg>';
+
+function setRunning(v) {
+  running = v;
+  document.getElementById('pauseBtn').innerHTML = (v ? pauseIcon : playIcon) + '<span>' + (v ? 'Pause' : 'Weiter') + '</span>';
+  document.getElementById('miniPause').innerHTML = v ? pauseIcon : playIcon;
+  renderTimer();
+}
+
+document.getElementById('pauseBtn').addEventListener('click', function () { setRunning(!running); });
+document.getElementById('miniPause').addEventListener('click', function () { setRunning(!running); });
+
+setInterval(function () {
+  if (!running) return;
+  remaining -= 1;
+  if (remaining <= 0) { remaining = TOTAL; }
+  renderTimer();
+}, 1000);
+
+renderTimer();
+</script>
+</body>
+</html>
+
+
+
+

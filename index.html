@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="de" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Baumzeit</title>
+</head>
+<body>
+<div id="view-main" class="view-main">
+  <div class="window">
+    <header class="titlebar" data-tauri-drag-region>
+      <div class="brand" data-tauri-drag-region>
+        <span class="brand-mark">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 17.2V11"/><path d="M10 4 13.6 9H11.8L14.6 13.2H5.4L8.2 9H6.4Z" fill="currentColor" fill-opacity=".16"/></svg>
+        </span>
+        <span>Baumzeit</span>
+      </div>
+      <div class="titlebar-right">
+        <button class="icon-btn" id="themeBtn" title="Hell / Dunkel wechseln" aria-label="Design wechseln"></button>
+        <div class="win-controls">
+          <button class="win-btn" id="winMin" title="Minimieren" aria-label="Minimieren">
+            <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 5h6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          </button>
+          <button class="win-btn" id="winMax" title="Maximieren" aria-label="Maximieren">
+            <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><rect x="2.5" y="2.5" width="5" height="5" rx="1" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+          </button>
+          <button class="win-btn close" id="winClose" title="In den Tray" aria-label="In den Tray">
+            <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2.5 2.5l5 5M7.5 2.5l-5 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="Ansichten">
+      <button class="tab active" data-tab="timer">Timer</button>
+      <button class="tab" data-tab="wald">Wald</button>
+      <button class="tab" data-tab="stats">Statistik</button>
+      <button class="tab" data-tab="settings">Einstellungen</button>
+    </nav>
+
+    <main class="app-body">
+      <section class="panel active" id="panel-timer" aria-label="Timer">
+        <div class="timer-grid">
+          <div class="card timer-card">
+            <div class="mode-row">
+              <div class="seg" id="timerModeSeg">
+                <button class="seg-btn active" data-mode="pomodoro">Pomodoro</button>
+                <button class="seg-btn" data-mode="frei">Frei</button>
+              </div>
+              <div class="mode-note" id="modeNote">25 Min lernen · 5 Min Pause</div>
+            </div>
+
+            <div class="species-row">
+              <span class="species-label">Baumart</span>
+              <select id="speciesSelect" aria-label="Baumart wählen"></select>
+            </div>
+
+            <div class="timer-tree">
+              <div class="big-tree grow-in" id="bigTree"></div>
+            </div>
+            <div class="time" id="mainTime">25:00</div>
+            <div class="time-label" id="mainTimeLabel">bereit · Pomodoro</div>
+            <div class="progress">
+              <div class="progress-track"><div class="progress-fill" id="mainBar" style="width:0%"></div></div>
+              <div class="progress-meta"><span id="mainElapsed">0 von 25 Min</span><span id="mainPct">0 %</span></div>
+            </div>
+            <div class="actions">
+              <button class="btn btn-primary" id="pauseBtn"><span class="btn-icon" id="pauseIcon"></span><span id="pauseLabel">Session starten</span></button>
+              <button class="btn btn-ghost hidden" id="endBtn">Session beenden</button>
+            </div>
+            <div class="timer-hint" id="timerHint">Nach der Session startet die Pause automatisch</div>
+          </div>
+
+          <div class="side-stack">
+            <div class="card">
+              <div class="card-head"><span class="card-title">Heute</span><span class="card-sub" id="todayDate">–</span></div>
+              <div class="mini-stats">
+                <div class="mini-stat"><b id="todayMinutes">0<span style="font-size:12px;font-weight:500"> Min</span></b><span>Lernzeit</span></div>
+                <div class="mini-stat"><b id="todayTrees">0</b><span>Bäume</span></div>
+                <div class="mini-stat"><b id="todayStreak">0</b><span>Streak</span></div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head"><span class="card-title">Zuletzt gepflanzt</span><span class="card-sub" id="recentLabel">–</span></div>
+              <div class="tree-row" id="recentTrees"></div>
+              <div class="ground-strip"></div>
+            </div>
+
+            <div class="card">
+              <div class="tip">
+                <span class="tip-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 3c-5 0-9 2.5-9 8 0 0 1 1 2 1 5.5 0 7-4.5 7-9Z"/><path d="M4 12c1.5-3 4-5 7-6"/></svg></span>
+                <p>Kurze Sessions pflanzen Setzlinge, lange werden zu großen Bäumen. Jede Minute zählt — nichts geht verloren.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-wald" aria-label="Wald">
+        <div class="section-head">
+          <span class="section-title">Dein Wald</span>
+          <span class="chip" id="waldSummary">0 Std · 0 Bäume</span>
+        </div>
+
+        <div id="waldDays"></div>
+
+        <div class="section-head" style="margin-top:18px">
+          <span class="section-title" style="font-size:13px">Baumarten</span>
+          <span class="card-sub">freigeschaltet nach Gesamtstunden</span>
+        </div>
+        <div class="species" id="speciesGrid"></div>
+      </section>
+
+      <section class="panel" id="panel-stats" aria-label="Statistik">
+        <div class="stats-grid">
+          <div class="card stat"><b id="statsToday">0 Min</b><span>Heute</span></div>
+          <div class="card stat"><b id="statsWeek">0 Min</b><span>Diese Woche</span></div>
+          <div class="card stat"><b id="statsTotal">0 Std</b><span>Gesamt</span></div>
+          <div class="card stat"><b id="statsStreak">0 Tage</b><span>Streak</span></div>
+        </div>
+
+        <div class="card chart-card">
+          <div class="card-head"><span class="card-title">Letzte 7 Tage</span><span class="card-sub">Lernzeit pro Tag</span></div>
+          <div class="chart" id="chart"></div>
+          <div class="chart-labels" id="chartLabels"></div>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-settings" aria-label="Einstellungen">
+        <div class="settings-group">
+          <div class="group-title">Timer</div>
+          <div class="card" style="padding:0">
+            <div class="row">
+              <div><div class="row-label">Modus</div><div class="row-desc">Pomodoro-Blöcke oder freier Timer</div></div>
+              <div class="row-control"><div class="seg" id="settingsModeSeg">
+                <button class="seg-btn active" data-mode="pomodoro">Pomodoro</button>
+                <button class="seg-btn" data-mode="frei">Frei</button>
+              </div></div>
+            </div>
+            <div class="row">
+              <div><div class="row-label">Lernzeit</div><div class="row-desc">Länge einer Fokus-Session</div></div>
+              <div class="row-control"><select id="workSelect" aria-label="Lernzeit">
+                <option value="15">15 Minuten</option>
+                <option value="25">25 Minuten</option>
+                <option value="50">50 Minuten</option>
+              </select></div>
+            </div>
+            <div class="row">
+              <div><div class="row-label">Pause</div><div class="row-desc">Startet automatisch nach der Session</div></div>
+              <div class="row-control"><select id="breakSelect" aria-label="Pausenlänge">
+                <option value="5">5 Minuten</option>
+                <option value="10">10 Minuten</option>
+                <option value="15">15 Minuten</option>
+              </select></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <div class="group-title">Verhalten</div>
+          <div class="card" style="padding:0">
+            <div class="row">
+              <div><div class="row-label">Beim Schließen in den Tray</div><div class="row-desc">Timer läuft im Hintergrund weiter</div></div>
+              <div class="row-control"><label class="switch"><input type="checkbox" id="closeTrayToggle"><span class="track"></span></label></div>
+            </div>
+            <div class="row">
+              <div><div class="row-label">Mit Windows starten</div><div class="row-desc">Baumzeit öffnet sich beim Anmelden</div></div>
+              <div class="row-control"><label class="switch"><input type="checkbox" id="autostartToggle"><span class="track"></span></label></div>
+            </div>
+            <div class="row">
+              <div><div class="row-label">Mini-Modus im Vordergrund</div><div class="row-desc">Kleines Fenster bleibt über anderen Programmen</div></div>
+              <div class="row-control"><label class="switch"><input type="checkbox" id="miniTopToggle"><span class="track"></span></label></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <div class="group-title">Darstellung</div>
+          <div class="card" style="padding:0">
+            <div class="row">
+              <div><div class="row-label">Design</div><div class="row-desc">Helles oder dunkles Erscheinungsbild</div></div>
+              <div class="row-control"><div class="seg" id="themeSeg">
+                <button class="seg-btn active" data-set="light">Hell</button>
+                <button class="seg-btn" data-set="dark">Dunkel</button>
+                <button class="seg-btn" data-set="system">System</button>
+              </div></div>
+            </div>
+            <div class="row">
+              <div><div class="row-label">Ton am Sessionende</div><div class="row-desc">Dezenter Glockenton</div></div>
+              <div class="row-control"><label class="switch"><input type="checkbox" id="soundToggle"><span class="track"></span></label></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <div class="group-title">Daten</div>
+          <div class="card" style="padding:0">
+            <div class="row">
+              <div style="min-width:0"><div class="row-label">Speicherort</div><div class="path-box" id="dataPath" style="margin-top:6px">%APPDATA%\Baumzeit\wald.json</div></div>
+              <div class="row-control"><button class="btn-small" id="openFolderBtn">Ordner öffnen</button></div>
+            </div>
+            <div class="row">
+              <div><div class="row-label">Mini-Modus</div><div class="row-desc">Kleines Fenster mit Baum und Restzeit</div></div>
+              <div class="row-control"><button class="btn-small" id="openMiniBtn">Öffnen</button></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<div id="view-mini" class="view-mini hidden">
+  <div class="mini-window" id="miniWindow" data-tauri-drag-region>
+    <div class="mini-tree" id="miniTree"></div>
+    <div class="mini-body" data-tauri-drag-region>
+      <div class="mini-time" id="miniTime">25:00</div>
+      <div class="mini-sub" id="miniSub">Bereit</div>
+    </div>
+    <button class="mini-btn" id="miniPause" title="Start / Pause" aria-label="Start oder Pause"></button>
+    <button class="mini-close" id="miniClose" title="Mini-Modus schließen" aria-label="Mini-Modus schließen">×</button>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
