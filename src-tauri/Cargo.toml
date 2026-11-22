@@ -1,6 +1,6 @@
 [package]
 name = "baumzeit"
-version = "0.2.1"
+version = "0.2.2"
 description = "Baumzeit – ruhiger Fokus-Timer mit wachsendem Wald"
 authors = ["Baumzeit"]
 edition = "2021"

@@ -157,6 +157,12 @@ fn set_close_to_tray(enabled: bool) {
     CLOSE_TO_TRAY.store(enabled, Ordering::SeqCst);
 }
 
+#[tauri::command]
+fn quit_app(app: tauri::AppHandle) {
+    QUITTING.store(true, Ordering::SeqCst);
+    app.exit(0);
+}
+
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
@@ -180,7 +186,8 @@ pub fn run() {
             toggle_mini,
             hide_mini,
             set_mini_always_on_top,
-            set_close_to_tray
+            set_close_to_tray,
+            quit_app
         ])
         .setup(|app| {
             let show = MenuItem::with_id(app, "show", "Öffnen", true, None::<&str>)?;

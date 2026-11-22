@@ -124,7 +124,7 @@ input, select { font: inherit; }
   transition: background 0.15s, color 0.15s;
 }
 .win-btn:hover { background: var(--surface-2); color: var(--text); }
-.win-btn.close:hover { background: #c94a45; color: #fff; }
+.win-btn.close:hover, .win-btn.quit:hover { background: #c94a45; color: #fff; }
 
 .tabs {
   flex: 0 0 auto;
