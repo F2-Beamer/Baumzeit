@@ -53,42 +53,24 @@ function forestSceneHTML(sessions) {
   const H = 380;
   const groundY = 318;
   const n = trees.length;
-  const rowCount = n <= 6 ? 2 : n <= 18 ? 3 : 4;
-  const rowBands = Array.from({ length: rowCount }, (_, r) => {
-    const t = rowCount === 1 ? 1 : r / (rowCount - 1); // 0 hinten, 1 vorne
-    return { depth: t, y: groundY - 58 + t * 52, items: [] };
-  });
+  const spreadX = Math.min(W - 180, Math.max(140, Math.sqrt(n) * 62));
+  const spreadY = Math.min(78, Math.max(34, Math.sqrt(n) * 11));
+  const centerX = W / 2;
+  const centerY = groundY - 34;
 
-  // Bäume auf Reihen verteilen (stabil nach Seed), damit sie als Wald zusammenstehen.
-  const ordered = trees.slice().sort((a, b) => (Number(a.seed) || 0) - (Number(b.seed) || 0) || String(a.id).localeCompare(String(b.id)));
-  ordered.forEach((s, i) => {
+  // Zufällig, aber als zusammenhängender Wald-Hain.
+  const placed = trees.map((s, i) => {
     const rnd = mulberry32((Number(s.seed) || i + 1) * 977 + i * 37);
-    const row = rowBands[Math.floor(rnd() * rowCount)];
-    row.items.push({ s, rnd });
-  });
-
-  const placed = [];
-  rowBands.forEach((row, rowIndex) => {
-    const count = row.items.length;
-    if (!count) return;
-    const spacing = count === 1 ? 0 : Math.min(74, Math.max(38, (W - 170) / Math.max(1, count - 1)));
-    const totalWidth = spacing * Math.max(0, count - 1);
-    const startX = W / 2 - totalWidth / 2;
-    row.items
-      .sort((a, b) => (Number(a.s.seed) || 0) - (Number(b.s.seed) || 0))
-      .forEach((item, i) => {
-        const minutes = Math.max(1, Number(item.s.minutes) || 1);
-        const depthJitter = (item.rnd() - 0.5) * 10;
-        const depth = Math.min(1, Math.max(0, row.depth + depthJitter / 80));
-        const scaleBase = 0.62 + (Math.min(50, minutes) / 50) * 0.72;
-        const scale = scaleBase * (0.92 + depth * 0.14);
-        const jitterX = (item.rnd() - 0.5) * Math.min(18, spacing * 0.35);
-        const x = Math.min(W - 45, Math.max(45, startX + i * spacing + jitterX));
-        const y = row.y + depthJitter;
-        placed.push({ s: item.s, minutes, scale, x, y, depth });
-      });
-  });
-  placed.sort((a, b) => a.y - b.y || a.x - b.x);
+    const minutes = Math.max(1, Number(s.minutes) || 1);
+    const angle = rnd() * Math.PI * 2;
+    const radius = Math.sqrt(rnd()); // gleichmäßiger in der Fläche
+    const x = Math.min(W - 55, Math.max(55, centerX + Math.cos(angle) * radius * (spreadX / 2)));
+    const y = Math.min(groundY + 18, Math.max(groundY - 86, centerY + Math.sin(angle) * radius * spreadY));
+    const depth = Math.min(1, Math.max(0, (y - (groundY - 86)) / 104));
+    const scaleBase = 0.60 + (Math.min(50, minutes) / 50) * 0.72;
+    const scale = scaleBase * (0.90 + depth * 0.16);
+    return { s, minutes, scale, x, y, depth };
+  }).sort((a, b) => a.y - b.y || a.x - b.x);
 
   const hills = `
     <defs>

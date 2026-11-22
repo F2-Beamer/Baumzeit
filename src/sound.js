@@ -1,62 +1,35 @@
-// Klangschalen-Ton über WebAudio – keine Audiodateien nötig.
+// Session-Ende-Ton: Klangschale als Audiodatei.
+const zenToneUrl = new URL('../assets/alex_jauk-zen-tone-high-202554.mp3', import.meta.url).href;
 
-let ctx = null;
+let audio = null;
 
-function ensureContext() {
-  if (ctx) return ctx;
-  const Ctor = window.AudioContext || window.webkitAudioContext;
-  if (!Ctor) return null;
-  try {
-    ctx = new Ctor();
-  } catch {
-    ctx = null;
-  }
-  return ctx;
+function getAudio() {
+  if (audio) return audio;
+  if (typeof Audio === 'undefined') return null;
+  audio = new Audio(zenToneUrl);
+  audio.preload = 'auto';
+  audio.volume = 0.85;
+  return audio;
 }
 
-// AudioContext darf erst nach einer Nutzerinteraktion gestartet werden.
+// Audio darf erst nach einer Nutzerinteraktion zuverlässig gestartet werden.
 export function initAudio() {
-  const context = ensureContext();
-  if (context && context.state === 'suspended') {
-    context.resume().catch(() => {});
-  }
+  const a = getAudio();
+  if (!a) return;
+  // Leise vorbereiten, damit der erste Ton nicht blockiert.
+  a.load();
 }
 
 export function playBell() {
-  const context = ensureContext();
-  if (!context) return;
-  if (context.state === 'suspended') {
-    context.resume().catch(() => {});
-  }
-
-  const now = context.currentTime;
-  const master = context.createGain();
-  master.gain.setValueAtTime(0.0001, now);
-  master.gain.exponentialRampToValueAtTime(0.9, now + 0.02);
-  master.gain.exponentialRampToValueAtTime(0.0001, now + 5.5);
-  master.connect(context.destination);
-
-  // Klangschale: Grundton, Obertöne und leichte Schwebung.
-  const partials = [
-    { freq: 262, gain: 0.34, decay: 5.2, type: 'sine' },
-    { freq: 524, gain: 0.16, decay: 4.4, type: 'sine' },
-    { freq: 786, gain: 0.08, decay: 3.4, type: 'sine' },
-    { freq: 1048, gain: 0.045, decay: 2.8, type: 'sine' },
-    { freq: 265.5, gain: 0.05, decay: 4.8, type: 'sine' } // leichte Schwebung
-  ];
-
-  for (const p of partials) {
-    const osc = context.createOscillator();
-    const gain = context.createGain();
-    osc.type = p.type;
-    osc.frequency.setValueAtTime(p.freq, now);
-    // Sanfter Anschlag: minimaler Pitch-Fall wie bei einer echten Schale.
-    osc.frequency.exponentialRampToValueAtTime(Math.max(40, p.freq * 0.998), now + 1.5);
-    gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.exponentialRampToValueAtTime(p.gain, now + 0.015);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + p.decay);
-    osc.connect(gain).connect(master);
-    osc.start(now);
-    osc.stop(now + p.decay + 0.1);
+  const a = getAudio();
+  if (!a) return;
+  try {
+    a.currentTime = 0;
+    const playPromise = a.play();
+    if (playPromise && typeof playPromise.catch === 'function') {
+      playPromise.catch(() => {});
+    }
+  } catch {
+    // Ton ist optional; Fehler nicht an die Oberfläche bringen.
   }
 }

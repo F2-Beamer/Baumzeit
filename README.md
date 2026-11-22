@@ -52,7 +52,7 @@ npm run tauri build
 
 Artefakte:
 
-- Installer: `src-tauri/target/release/bundle/nsis/Baumzeit_0.2.2_x64-setup.exe`
+- Installer: `src-tauri/target/release/bundle/nsis/Baumzeit_0.2.3_x64-setup.exe`
 - Portable: `src-tauri/target/release/baumzeit.exe`
 
 ## Daten
