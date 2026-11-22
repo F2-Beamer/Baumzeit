@@ -1078,6 +1078,21 @@ export class App {
     const openMiniBtn = this.$('openMiniBtn');
     if (openMiniBtn) openMiniBtn.addEventListener('click', () => this.openMini());
 
+    const feedbackSendBtn = this.$('feedbackSendBtn');
+    if (feedbackSendBtn) feedbackSendBtn.addEventListener('click', () => {
+      const subject = (this.$('feedbackSubject')?.value || '').trim() || 'Baumzeit Feedback';
+      const message = (this.$('feedbackMessage')?.value || '').trim();
+      if (!message) {
+        this.showToast('Bitte schreibe zuerst eine Nachricht.');
+        this.$('feedbackMessage')?.focus();
+        return;
+      }
+      const version = this.$('appVersion')?.textContent || '';
+      const body = version ? `${message}\n\n---\n${version}` : message;
+      const mailto = `mailto:baumzeit@schneemann.org?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.location.href = mailto;
+    });
+
     document.addEventListener('keydown', (event) => {
       if (event.target instanceof Element && event.target.closest('input, select, textarea, button')) return;
       if (event.code === 'Space') {

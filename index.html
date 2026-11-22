@@ -264,6 +264,25 @@
             <button class="btn-small" data-open-folder>Ordner öffnen</button>
           </div>
         </div>
+
+        <div class="card help-card">
+          <div class="card-head"><span class="card-title">Feedback</span><span class="card-sub">an baumzeit@schneemann.org</span></div>
+          <p class="help-text" style="margin-bottom:12px">Hast du einen Wunsch, einen Fehler gefunden oder eine Rückmeldung? Schreibe mir direkt eine Nachricht.</p>
+          <div class="feedback-form">
+            <label class="field">
+              <span class="field-label">Betreff</span>
+              <input type="text" id="feedbackSubject" class="text-input" placeholder="z. B. Wunsch oder Fehlerbeschreibung" maxlength="120">
+            </label>
+            <label class="field">
+              <span class="field-label">Nachricht</span>
+              <textarea id="feedbackMessage" class="text-input textarea" rows="5" placeholder="Deine Rückmeldung …" maxlength="2000"></textarea>
+            </label>
+            <div class="feedback-actions">
+              <button class="btn-small primary" id="feedbackSendBtn" type="button">E-Mail öffnen</button>
+              <span class="help-text">Öffnet dein E-Mail-Programm mit vorausgefüllter Nachricht.</span>
+            </div>
+          </div>
+        </div>
       </section>
     </main>
   </div>

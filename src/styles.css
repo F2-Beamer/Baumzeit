@@ -365,7 +365,7 @@ input, select { font: inherit; }
 .row-label { font-size: 13px; font-weight: 500; }
 .row-desc { font-size: 11.5px; color: var(--muted); margin-top: 1px; }
 .row-control { flex: 0 0 auto; }
-select, input[type="number"] {
+select, input[type="number"], input[type="text"], textarea {
   font: inherit;
   font-size: 12.5px;
   color: var(--text);
@@ -381,7 +381,12 @@ select {
   background-repeat: no-repeat;
   background-position: right 9px center;
 }
-select:disabled, input[type="number"]:disabled { opacity: 0.55; }
+select:disabled, input[type="number"]:disabled, input[type="text"]:disabled, textarea:disabled { opacity: 0.55; }
+.text-input:focus, .num-field input[type="number"]:focus {
+  outline: 2px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  outline-offset: 1px;
+  border-color: var(--accent);
+}
 .num-field {
   display: inline-flex;
   align-items: center;
@@ -392,11 +397,6 @@ select:disabled, input[type="number"]:disabled { opacity: 0.55; }
 .num-field input[type="number"] {
   width: 76px;
   font-variant-numeric: tabular-nums;
-}
-.num-field input[type="number"]:focus {
-  outline: 2px solid color-mix(in srgb, var(--accent) 35%, transparent);
-  outline-offset: 1px;
-  border-color: var(--accent);
 }
 .switch { display: inline-flex; cursor: pointer; }
 .switch input { position: absolute; opacity: 0; width: 0; height: 0; }
@@ -428,6 +428,15 @@ select:disabled, input[type="number"]:disabled { opacity: 0.55; }
 .help-keys .plus { color: var(--muted); font-size: 12px; }
 .help-data { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-top: 12px; }
 @media (max-width: 560px) { .help-data { flex-direction: column; align-items: stretch; } }
+
+.feedback-form { display: flex; flex-direction: column; gap: 10px; }
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field-label { font-size: 12px; font-weight: 600; color: var(--text-soft); }
+.text-input { width: 100%; }
+.textarea { resize: vertical; min-height: 96px; line-height: 1.5; }
+.feedback-actions { display: flex; align-items: center; gap: 12px; margin-top: 2px; }
+.btn-small.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn-small.primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
 
 .toast {
   position: fixed;
