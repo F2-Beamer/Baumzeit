@@ -73,15 +73,20 @@ assert.equal(SPECIES_LIST.length, 6, 'Sechs Baumarten');
 // --- Zustands-Normalisierung ---
 const normalized = normalizeState({
   version: 1,
-  settings: { mode: 'quatsch', workMinutes: 999, theme: 'blau', species: 'tanne' },
+  settings: { mode: 'quatsch', workMinutes: 999, breakMinutes: 0, theme: 'blau', species: 'tanne' },
   sessions: [session(0, 25), { minutes: -3 }, null],
   active: null
 });
 assert.equal(normalized.settings.mode, 'pomodoro');
 assert.equal(normalized.settings.workMinutes, 180);
+assert.equal(normalized.settings.breakMinutes, 1);
 assert.equal(normalized.settings.theme, 'system');
 assert.equal(normalized.sessions.length, 1);
 assert.equal(normalized.settings.species, 'eiche', 'Gesperrte Art fällt auf Eiche zurück');
+
+const custom = normalizeState({ settings: { workMinutes: 7, breakMinutes: 3 } });
+assert.equal(custom.settings.workMinutes, 7, 'Freie Lernzeit bleibt erhalten');
+assert.equal(custom.settings.breakMinutes, 3, 'Freie Pause bleibt erhalten');
 
 const active = normalizeState({
   settings: {},

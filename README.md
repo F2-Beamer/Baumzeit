@@ -4,7 +4,7 @@ Ruhiger Fokus-Timer für Windows 11: Während des Lernens wächst ein Baum live 
 
 ## Funktionen
 
-- **Pomodoro (25/5, anpassbar) oder freier Timer** – umschaltbar
+- **Pomodoro oder freier Timer** – Lernzeit und Pause frei einstellbar (1–180 / 1–60 Min)
 - **Live-Wachstum** in vier Stufen, Pause/Weiter ohne Zeitdrift
 - **Wald** mit Tagesgruppen, Baumgröße nach tatsächlicher Lernzeit
 - **6 Baumarten**, freigeschaltet über Gesamtstunden (Eiche, Birke, Tanne, Ahorn, Kirsche, Ulme)
@@ -12,6 +12,7 @@ Ruhiger Fokus-Timer für Windows 11: Während des Lernens wächst ein Baum live 
 - **Hell/Dunkel/System**, dezenter Glockenton am Sessionende
 - **Mini-Modus** (immer im Vordergrund) und **Tray**: Schließen legt die App in den Tray, der Timer läuft weiter
 - **Autostart**, Wiederherstellung einer laufenden Session nach Neustart
+- **Hilfe-Tab** mit Kurzbeschreibung, Tastaturkürzeln und Versionsnummer
 - Installer und portable EXE
 
 ## Bedienung
@@ -50,7 +51,7 @@ npm run tauri build
 
 Artefakte:
 
-- Installer: `src-tauri/target/release/bundle/nsis/Baumzeit_0.1.0_x64-setup.exe`
+- Installer: `src-tauri/target/release/bundle/nsis/Baumzeit_0.2.0_x64-setup.exe`
 - Portable: `src-tauri/target/release/baumzeit.exe`
 
 ## Daten

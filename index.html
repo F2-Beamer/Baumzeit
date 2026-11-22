@@ -36,6 +36,7 @@
       <button class="tab" data-tab="wald">Wald</button>
       <button class="tab" data-tab="stats">Statistik</button>
       <button class="tab" data-tab="settings">Einstellungen</button>
+      <button class="tab" data-tab="hilfe">Hilfe</button>
     </nav>
 
     <main class="app-body">
@@ -139,20 +140,22 @@
               </div></div>
             </div>
             <div class="row">
-              <div><div class="row-label">Lernzeit</div><div class="row-desc">Länge einer Fokus-Session</div></div>
-              <div class="row-control"><select id="workSelect" aria-label="Lernzeit">
-                <option value="15">15 Minuten</option>
-                <option value="25">25 Minuten</option>
-                <option value="50">50 Minuten</option>
-              </select></div>
+              <div><div class="row-label">Lernzeit</div><div class="row-desc">Länge einer Fokus-Session (1–180 Min)</div></div>
+              <div class="row-control">
+                <div class="num-field">
+                  <input type="number" id="workInput" min="1" max="180" step="1" inputmode="numeric" aria-label="Lernzeit in Minuten">
+                  <span>Min</span>
+                </div>
+              </div>
             </div>
             <div class="row">
-              <div><div class="row-label">Pause</div><div class="row-desc">Startet automatisch nach der Session</div></div>
-              <div class="row-control"><select id="breakSelect" aria-label="Pausenlänge">
-                <option value="5">5 Minuten</option>
-                <option value="10">10 Minuten</option>
-                <option value="15">15 Minuten</option>
-              </select></div>
+              <div><div class="row-label">Pause</div><div class="row-desc">Startet automatisch nach der Session (1–60 Min)</div></div>
+              <div class="row-control">
+                <div class="num-field">
+                  <input type="number" id="breakInput" min="1" max="60" step="1" inputmode="numeric" aria-label="Pausenlänge in Minuten">
+                  <span>Min</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -198,12 +201,61 @@
           <div class="card" style="padding:0">
             <div class="row">
               <div style="min-width:0"><div class="row-label">Speicherort</div><div class="path-box" id="dataPath" style="margin-top:6px">%APPDATA%\Baumzeit\wald.json</div></div>
-              <div class="row-control"><button class="btn-small" id="openFolderBtn">Ordner öffnen</button></div>
+              <div class="row-control"><button class="btn-small" id="openFolderBtn" data-open-folder>Ordner öffnen</button></div>
             </div>
             <div class="row">
               <div><div class="row-label">Mini-Modus</div><div class="row-desc">Kleines Fenster mit Baum und Restzeit</div></div>
               <div class="row-control"><button class="btn-small" id="openMiniBtn">Öffnen</button></div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-hilfe" aria-label="Hilfe">
+        <div class="section-head">
+          <span class="section-title">Hilfe</span>
+          <span class="chip" id="appVersionChip">Version …</span>
+        </div>
+
+        <div class="card help-card">
+          <p class="help-lead">Baumzeit ist ein ruhiger Fokus-Timer für Windows. Während du lernst, wächst ein Baum mit – am Ende wird er in deinem Wald gepflanzt. Nichts stirbt, jede Minute zählt.</p>
+          <div class="help-grid">
+            <div class="help-item">
+              <div class="help-title">Session starten</div>
+              <p>Modus wählen, Lernzeit und Pause einstellen und auf „Session starten“ klicken. Mit der Leertaste geht es auch.</p>
+            </div>
+            <div class="help-item">
+              <div class="help-title">Baum &amp; Wald</div>
+              <p>Der Baum wächst in vier Stufen mit. Nach dem Ende wird er gepflanzt – die Größe im Wald richtet sich nach der tatsächlichen Lernzeit.</p>
+            </div>
+            <div class="help-item">
+              <div class="help-title">Pomodoro oder frei</div>
+              <p>Pomodoro startet nach jeder Fokus-Session automatisch die Pause. Im freien Modus wird der Baum direkt nach dem Ende gepflanzt.</p>
+            </div>
+            <div class="help-item">
+              <div class="help-title">Mini-Modus &amp; Tray</div>
+              <p>Das Mini-Fenster zeigt Baum und Restzeit über anderen Programmen. Beim Schließen läuft der Timer im Tray weiter.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card help-card">
+          <div class="card-head"><span class="card-title">Tastaturkürzel</span></div>
+          <div class="help-keys">
+            <div><kbd>Leertaste</kbd><span>Session starten oder pausieren</span></div>
+            <div><kbd>Strg</kbd><span class="plus">+</span><kbd>M</kbd><span>Mini-Modus öffnen</span></div>
+          </div>
+        </div>
+
+        <div class="card help-card">
+          <div class="card-head"><span class="card-title">Über Baumzeit</span><span class="card-sub" id="appVersion">Version …</span></div>
+          <p class="help-text">Alle Daten bleiben auf diesem Computer. Es gibt kein Konto, keine Cloud und keine Telemetrie.</p>
+          <div class="help-data">
+            <div style="min-width:0">
+              <div class="row-label">Speicherort</div>
+              <div class="path-box" id="helpDataPath" style="margin-top:6px">%APPDATA%\Baumzeit\wald.json</div>
+            </div>
+            <button class="btn-small" data-open-folder>Ordner öffnen</button>
           </div>
         </div>
       </section>

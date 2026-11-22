@@ -164,6 +164,7 @@ export class App {
     this.bindTauriEvents();
     this.requestNotificationPermission();
     this.loadDataPath();
+    this.loadVersion();
     this.call('set_close_to_tray', { enabled: this.state.settings.closeToTray });
     this.call('set_mini_always_on_top', { enabled: this.state.settings.miniAlwaysOnTop });
     this.syncAutostart();
@@ -619,16 +620,10 @@ export class App {
   renderSettings() {
     const s = this.state.settings;
 
-    const work = this.$('workSelect');
-    if (work) {
-      ensureOption(work, s.workMinutes, `${s.workMinutes} Minuten`);
-      work.value = String(s.workMinutes);
-    }
-    const brk = this.$('breakSelect');
-    if (brk) {
-      ensureOption(brk, s.breakMinutes, `${s.breakMinutes} Minuten`);
-      brk.value = String(s.breakMinutes);
-    }
+    const work = this.$('workInput');
+    if (work && document.activeElement !== work) work.value = String(s.workMinutes);
+    const brk = this.$('breakInput');
+    if (brk && document.activeElement !== brk) brk.value = String(s.breakMinutes);
 
     const closeTray = this.$('closeTrayToggle');
     if (closeTray) closeTray.checked = s.closeToTray;
@@ -730,8 +725,26 @@ export class App {
 
   async loadDataPath() {
     const path = await storage.getDataPath();
-    const el = this.$('dataPath');
-    if (el) el.textContent = path;
+    for (const id of ['dataPath', 'helpDataPath']) {
+      const el = this.$(id);
+      if (el) el.textContent = path;
+    }
+  }
+
+  async loadVersion() {
+    let version = typeof __APP_VERSION__ === 'string' ? __APP_VERSION__ : '';
+    if (hasTauri) {
+      try {
+        const mod = await import('@tauri-apps/api/app');
+        version = await mod.getVersion();
+      } catch { /* Build-Version als Rückfall */ }
+    }
+    if (!version) return;
+    const label = `Version ${version}`;
+    for (const id of ['appVersion', 'appVersionChip']) {
+      const el = this.$(id);
+      if (el) el.textContent = label;
+    }
   }
 
   async openMini() {
@@ -848,16 +861,21 @@ export class App {
       });
     }
 
-    const work = this.$('workSelect');
-    if (work) work.addEventListener('change', () => {
-      this.state.settings.workMinutes = clampInt(work.value, 1, 180, 25);
-      this.afterSettingsChange();
-    });
-    const brk = this.$('breakSelect');
-    if (brk) brk.addEventListener('change', () => {
-      this.state.settings.breakMinutes = clampInt(brk.value, 1, 60, 5);
-      this.afterSettingsChange();
-    });
+    const bindMinutes = (id, key, min, max) => {
+      const input = this.$(id);
+      if (!input) return;
+      input.addEventListener('change', () => {
+        const fallback = this.state.settings[key];
+        const raw = input.value.trim();
+        const next = raw === '' ? fallback : clampInt(raw, min, max, fallback);
+        input.value = String(next);
+        if (next === this.state.settings[key]) return;
+        this.state.settings[key] = next;
+        this.afterSettingsChange();
+      });
+    };
+    bindMinutes('workInput', 'workMinutes', 1, 180);
+    bindMinutes('breakInput', 'breakMinutes', 1, 60);
 
     const closeTray = this.$('closeTrayToggle');
     if (closeTray) closeTray.addEventListener('change', () => {
@@ -887,14 +905,15 @@ export class App {
       if (sound.checked) playBell();
     });
 
-    const openFolder = this.$('openFolderBtn');
-    if (openFolder) openFolder.addEventListener('click', async () => {
-      try {
-        const opened = await storage.openDataFolder();
-        this.showToast(opened ? 'Speicherordner geöffnet.' : 'Speicherordner ist nur in der Desktop-App verfügbar.');
-      } catch {
-        this.showToast('Speicherordner konnte nicht geöffnet werden.');
-      }
+    document.querySelectorAll('[data-open-folder]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        try {
+          const opened = await storage.openDataFolder();
+          this.showToast(opened ? 'Speicherordner geöffnet.' : 'Speicherordner ist nur in der Desktop-App verfügbar.');
+        } catch {
+          this.showToast('Speicherordner konnte nicht geöffnet werden.');
+        }
+      });
     });
 
     const openMiniBtn = this.$('openMiniBtn');
@@ -1051,15 +1070,5 @@ export class App {
       const btn = this.$('miniPause');
       if (btn) btn.innerHTML = icon;
     }
-  }
-}
-
-function ensureOption(select, value, label) {
-  const exists = Array.from(select.options).some((o) => o.value === String(value));
-  if (!exists) {
-    const option = document.createElement('option');
-    option.value = String(value);
-    option.textContent = label;
-    select.appendChild(option);
   }
 }
