@@ -706,7 +706,7 @@ export class App {
           const dateText = formatDateShort(g.date);
           const meta = `${formatMinutes(g.minutes)} · ${g.trees.length} ${g.trees.length === 1 ? 'Baum' : 'Bäume'}`;
           const trees = g.trees.map((t) => {
-            const speciesName = SPECIES[t.species]?.name || 'Baum';
+            const speciesName = SPECIES_LIST.find((sp) => sp.id === t.species)?.name || 'Baum';
             const tip = `Wann: ${formatDateTimeDE(t.endedAt)}\nLernzeit: ${formatDurationDE(t.minutes)}\nBaum: ${speciesName} – ${stageLabel(t.minutes)}`;
             return `<span class="slot" title="${escapeAttr(tip)}">${treeHTML(t.species, stageForMinutes(t.minutes), t.seed, historyTreeHeight(t.minutes))}</span>`;
           }).join('');
