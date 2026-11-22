@@ -4,7 +4,7 @@ Fokus-Timer für Windows 11, bei dem während des Lernens ein Baum wächst und d
 
 - **Projektordner:** `D:\Users\f2bea\KI-APPs-D\MeinWald`
 - **Design-Vorschau:** `design\preview.html` (freigegeben am 21.11.2026)
-- **Status:** umgesetzt als Version 0.2.4 (M1–M8 fertig, Icon, Wald-Zoom und Verlaufshöhen aktualisiert)
+- **Status:** umgesetzt als Version 0.2.6 (M1–M8 fertig, Layout-Fix, Verlauf-Tooltips, Chart-Format)
 
 ---
 

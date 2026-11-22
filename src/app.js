@@ -49,6 +49,37 @@ function historyTreeHeight(minutes) {
   return Math.round(28 + (clamped / 50) * 76);
 }
 
+function stageLabel(minutes) {
+  const stage = stageForMinutes(minutes);
+  return ['Setzling', 'Kleiner Baum', 'Wachsender Baum', 'Voll ausgewachsen'][stage - 1] || 'Setzling';
+}
+
+function formatDurationDE(minutes) {
+  const total = Math.max(0, Math.round(Number(minutes) || 0));
+  const h = Math.floor(total / 60);
+  const m = total % 60;
+  const parts = [];
+  if (h > 0) parts.push(`${h} ${h === 1 ? 'Stunde' : 'Stunden'}`);
+  if (m > 0) parts.push(`${m} ${m === 1 ? 'Minute' : 'Minuten'}`);
+  return parts.join(' ') || '0 Minuten';
+}
+
+function formatDateTimeDE(value) {
+  const d = new Date(value);
+  if (!Number.isFinite(d.getTime())) return '–';
+  const date = d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const time = d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+  return `${date}, ${time} Uhr`;
+}
+
+function escapeAttr(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
 function forestSceneHTML(sessions) {
   const trees = (sessions || []).filter((s) => s && Number(s.minutes) > 0);
   if (!trees.length) {
@@ -674,9 +705,11 @@ export class App {
           const heading = formatDayHeading(g.date);
           const dateText = formatDateShort(g.date);
           const meta = `${formatMinutes(g.minutes)} · ${g.trees.length} ${g.trees.length === 1 ? 'Baum' : 'Bäume'}`;
-          const trees = g.trees.map((t) => (
-            `<span class="slot">${treeHTML(t.species, stageForMinutes(t.minutes), t.seed, historyTreeHeight(t.minutes))}</span>`
-          )).join('');
+          const trees = g.trees.map((t) => {
+            const speciesName = SPECIES[t.species]?.name || 'Baum';
+            const tip = `Wann: ${formatDateTimeDE(t.endedAt)}\nLernzeit: ${formatDurationDE(t.minutes)}\nBaum: ${speciesName} – ${stageLabel(t.minutes)}`;
+            return `<span class="slot" title="${escapeAttr(tip)}">${treeHTML(t.species, stageForMinutes(t.minutes), t.seed, historyTreeHeight(t.minutes))}</span>`;
+          }).join('');
           return `<div class="day">
             <div class="day-head"><span class="day-name">${heading} <span class="day-date">${dateText}</span></span><span class="day-meta">${meta}</span></div>
             <div class="day-strip">${trees}</div>
@@ -719,7 +752,7 @@ export class App {
       chart.innerHTML = stats.last7.map((d) => {
         const h = Math.max(2, Math.round((d.minutes / max) * 118));
         return `<div class="col${d.today ? ' today' : ''}">
-          <span class="val">${d.minutes || ''}</span>
+          <span class="val">${d.minutes ? formatMinutes(d.minutes) : ''}</span>
           <div class="bar" style="height:${h}px"></div>
         </div>`;
       }).join('');
