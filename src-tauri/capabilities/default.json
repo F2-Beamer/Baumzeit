@@ -4,10 +4,10 @@
   "description": "Standardrechte für Baumzeit",
   "windows": ["main", "mini"],
   "permissions": [
-    "core:default",
     "core:event:default",
     "core:window:allow-start-dragging",
     "core:window:allow-internal-toggle-maximize",
+    "core:app:allow-version",
     "notification:default",
     "autostart:default"
   ]

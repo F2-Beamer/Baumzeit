@@ -34,11 +34,44 @@ fn load_state() -> Result<Option<String>, String> {
         .map_err(|e| e.to_string())
 }
 
+const MAX_STATE_BYTES: usize = 2 * 1024 * 1024;
+
 #[tauri::command]
 fn save_state(state: String) -> Result<(), String> {
-    // Sicherheitsnetz: nur gültiges JSON auf die Platte schreiben.
-    serde_json::from_str::<serde_json::Value>(&state)
-        .map_err(|e| format!("Ungültiger Zustand: {e}"))?;
+    if state.len() > MAX_STATE_BYTES {
+        return Err("Zustand ist zu groß".to_string());
+    }
+    // Sicherheitsnetz: nur gültiges, plausibles JSON auf die Platte schreiben.
+    let value: serde_json::Value =
+        serde_json::from_str(&state).map_err(|e| format!("Ungültiger Zustand: {e}"))?;
+    let obj = value
+        .as_object()
+        .ok_or_else(|| "Ungültiger Zustand: Root muss ein Objekt sein".to_string())?;
+    if let Some(v) = obj.get("version") {
+        if !v.is_number() {
+            return Err("Ungültiger Zustand: version muss eine Zahl sein".to_string());
+        }
+    }
+    if let Some(v) = obj.get("settings") {
+        if !v.is_object() {
+            return Err("Ungültiger Zustand: settings muss ein Objekt sein".to_string());
+        }
+    }
+    if let Some(v) = obj.get("sessions") {
+        if !v.is_array() {
+            return Err("Ungültiger Zustand: sessions muss ein Array sein".to_string());
+        }
+    }
+    if let Some(v) = obj.get("active") {
+        if !(v.is_object() || v.is_null()) {
+            return Err("Ungültiger Zustand: active muss ein Objekt oder null sein".to_string());
+        }
+    }
+    if let Some(v) = obj.get("unlockedSpecies") {
+        if !v.is_array() {
+            return Err("Ungültiger Zustand: unlockedSpecies muss ein Array sein".to_string());
+        }
+    }
 
     let dir = data_dir();
     fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
@@ -64,7 +97,10 @@ fn open_data_folder() -> Result<(), String> {
     fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
     #[cfg(windows)]
     {
-        std::process::Command::new("explorer.exe")
+        let explorer = std::env::var("SystemRoot")
+            .map(|root| PathBuf::from(root).join("explorer.exe"))
+            .unwrap_or_else(|_| PathBuf::from(r"explorer.exe"));
+        std::process::Command::new(explorer)
             .arg(&dir)
             .spawn()
             .map_err(|e| e.to_string())?;

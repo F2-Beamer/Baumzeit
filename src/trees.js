@@ -125,7 +125,7 @@ export function treeSVG(speciesId, stage, seed, cls, snow) {
   return '<svg class="' + (cls || '') + '" viewBox="0 0 100 140" aria-hidden="true">' + ground + body + '</svg>';
 }
 
-// GröÃŸe im Wald richtet sich nach der tatsächlichen Lernzeit.
+// Größe im Wald richtet sich nach der tatsächlichen Lernzeit.
 export function stageForMinutes(minutes) {
   if (minutes >= 20) return 4;
   if (minutes >= 10) return 3;

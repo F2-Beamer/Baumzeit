@@ -73,12 +73,17 @@ function formatDateTimeDE(value) {
   return `${date}, ${time} Uhr`;
 }
 
-function escapeAttr(value) {
+function escapeHTML(value) {
   return String(value)
     .replace(/&/g, '&amp;')
-    .replace(/"/g, '&quot;')
     .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function escapeAttr(value) {
+  return escapeHTML(value);
 }
 
 // Lokaler Kalendertag als Schlüssel – für den Wechsel der Weihnachtszeit um Mitternacht.
@@ -624,7 +629,7 @@ export class App {
             return `<span class="slot" title="${escapeAttr(tip)}">${treeHTML(t.species, stageForMinutes(t.minutes), t.seed, historyTreeHeight(t.minutes))}</span>`;
           }).join('');
           return `<div class="day">
-            <div class="day-head"><span class="day-name">${heading} <span class="day-date">${dateText}</span></span><span class="day-meta">${meta}</span></div>
+            <div class="day-head"><span class="day-name">${escapeHTML(heading)} <span class="day-date">${escapeHTML(dateText)}</span></span><span class="day-meta">${escapeHTML(meta)}</span></div>
             <div class="day-strip">${trees}</div>
           </div>`;
         }).join('');
@@ -636,12 +641,10 @@ export class App {
     if (grid) {
       grid.innerHTML = SPECIES_LIST.map((sp, i) => {
         const unlocked = stats.totalMinutes >= sp.need * 60;
-        const meta = unlocked
-          ? (sp.need === 0 ? 'freigeschaltet' : 'freigeschaltet')
-          : `${sp.need} Std ${LOCK_ICON}`;
+        const metaText = unlocked ? 'freigeschaltet' : `${sp.need} Std`;
         return `<div class="sp${unlocked ? '' : ' locked'}">
           ${treeSVG(sp.id, unlocked ? 4 : 2, 50 + i)}
-          <div><div class="sp-name">${sp.name}</div><div class="sp-meta">${meta}</div></div>
+          <div><div class="sp-name">${escapeHTML(sp.name)}</div><div class="sp-meta">${escapeHTML(metaText)}${unlocked ? '' : ` ${LOCK_ICON}`}</div></div>
         </div>`;
       }).join('');
     }
@@ -705,7 +708,7 @@ export class App {
       const totalMinutes = this.state.sessions.reduce((sum, x) => sum + x.minutes, 0);
       speciesSelect.innerHTML = SPECIES_LIST.map((sp) => {
         const unlocked = totalMinutes >= sp.need * 60;
-        return `<option value="${sp.id}"${unlocked ? '' : ' disabled'}>${sp.name}${unlocked ? '' : ` · ab ${sp.need} Std`}</option>`;
+        return `<option value="${escapeAttr(sp.id)}"${unlocked ? '' : ' disabled'}>${escapeHTML(sp.name)}${unlocked ? '' : ` · ab ${sp.need} Std`}</option>`;
       }).join('');
       speciesSelect.value = this.currentSpecies();
       speciesSelect.disabled = !!this.state.active;

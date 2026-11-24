@@ -4,6 +4,15 @@
 import { treeSVG, stageForMinutes, mulberry32 } from './trees.js';
 import { christmasState, christmasTreeSVG } from './christmas.js';
 
+function esc(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 // Standard: Farben kommen aus den CSS-Variablen (Hell/Dunkel-Theme).
 export const VAR_PALETTE = {
   skyA: 'var(--forest-sky-a)',
@@ -191,7 +200,7 @@ export function forestSceneHTML(sessions, options = {}) {
 
   const xmasTree = xmasBox
     ? '<g class="christmas-tree" transform="translate(' + xmasBox.x.toFixed(1) + ' ' + xmasBox.y.toFixed(1) + ') scale(' + xmasScale + ')">'
-      + '<title>' + xmasTip + '</title>'
+      + '<title>' + esc(xmasTip) + '</title>'
       + christmasTreeSVG({ ornaments: xmas.ornaments, star: xmas.star })
         .replace(/^<svg[^>]*>/, '')
         .replace(/<\/svg>$/, '')
@@ -202,7 +211,7 @@ export function forestSceneHTML(sessions, options = {}) {
     ? `Verschneiter Wald mit ${n} Bäumen und Weihnachtsbaum`
     : `Wald mit ${n} Bäumen`;
 
-  const scene = `<div class="forest-scene${winter ? ' winter' : ''}" role="img" aria-label="${label}">
+  const scene = `<div class="forest-scene${winter ? ' winter' : ''}" role="img" aria-label="${esc(label)}">
     <svg viewBox="${vbX} ${vbY} ${vbW} ${vbH}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <style>
         .bz-flake{animation-name:bzFall;animation-timing-function:linear;animation-iteration-count:infinite}
