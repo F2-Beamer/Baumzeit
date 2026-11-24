@@ -1,5 +1,12 @@
 # Release Notes – Baumzeit
 
+## v0.3.2 (24.11.2026) – 60-Minuten-Baum und Blumenwiese
+
+- **Baumwachstum angepasst:** Ein Baum ist jetzt nach 60 Minuten voll ausgewachsen (Stufen bei 15/30/45/60 Minuten).
+- **Blumenwiese:** Nach dem ausgewachsenen Baum wächst bis 120 Minuten eine Blumenwiese in 4 Stufen um den Baum (75/90/105/120 Minuten).
+- **Hilfe:** Die Wachstumsstufen für Baum und Blumenwiese sind im Hilfe-Tab übersichtlich beschrieben.
+- **Hinweis:** Bestehende Sessions werden beim Laden neu eingestuft; dadurch können frühere Bäume je nach Lernzeit eine andere Wachstumsstufe anzeigen.
+
 ## v0.3.1 (24.11.2026) – Waldabstände feiner
 
 ### Geändert

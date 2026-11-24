@@ -5,7 +5,7 @@ import {
   dayKey, formatDayHeading
 } from '../src/stats.js';
 import {
-  treeSVG, stageForMinutes, heightForMinutes, stageForProgress, SPECIES_LIST
+  treeSVG, stageForMinutes, meadowStageForMinutes, heightForMinutes, stageForProgress, SPECIES_LIST
 } from '../src/trees.js';
 import { normalizeState } from '../src/app.js';
 import { christmasState, christmasTreeSVG, ornamentSlots, ORNAMENT_SLOTS } from '../src/christmas.js';
@@ -61,15 +61,38 @@ assert.equal(grouped[0].trees.length, 2, 'Zwei Bäume heute');
 
 // --- Bäume ---
 assert.equal(stageForMinutes(1), 1);
-assert.equal(stageForMinutes(5), 2);
-assert.equal(stageForMinutes(15), 3);
-assert.equal(stageForMinutes(25), 4);
+assert.equal(stageForMinutes(14), 1);
+assert.equal(stageForMinutes(15), 2);
+assert.equal(stageForMinutes(30), 3);
+assert.equal(stageForMinutes(59), 3);
+assert.equal(stageForMinutes(60), 4);
+assert.equal(stageForMinutes(120), 4);
 assert.ok(heightForMinutes(5) < heightForMinutes(25), 'Länger = größer');
+assert.ok(heightForMinutes(25) < heightForMinutes(60), 'Bis 60 Min weiter größer');
+assert.equal(heightForMinutes(60), heightForMinutes(120), 'Baumgröße ab 60 Min gedeckelt');
 assert.equal(stageForProgress(0), 1);
+assert.equal(stageForProgress(0.24), 1);
+assert.equal(stageForProgress(0.25), 2);
+assert.equal(stageForProgress(0.5), 3);
+assert.equal(stageForProgress(0.75), 4);
 assert.equal(stageForProgress(0.9), 4);
+
+assert.equal(meadowStageForMinutes(60), 0);
+assert.equal(meadowStageForMinutes(74), 0);
+assert.equal(meadowStageForMinutes(75), 1);
+assert.equal(meadowStageForMinutes(90), 2);
+assert.equal(meadowStageForMinutes(105), 3);
+assert.equal(meadowStageForMinutes(120), 4);
+
 const svg = treeSVG('tanne', 4, 123);
 assert.match(svg, /^<svg class="" viewBox="0 0 100 140"/);
 assert.ok(svg.length > 200, 'Baum hat Inhalt');
+const meadow2 = treeSVG('eiche', 4, 42, '', false, 2);
+const meadow4 = treeSVG('eiche', 4, 42, '', false, 4);
+assert.ok(meadow2.includes('<g'), 'Wiese Stufe 2 hat Elemente');
+assert.ok(meadow4.includes('<g'), 'Wiese Stufe 4 hat Elemente');
+assert.ok(meadow4.length > meadow2.length, 'Wiese Stufe 4 ist voller als Stufe 2');
+assert.ok(!svg.includes('circle cx="24"'), 'Ohne Wiese keine Wiesenblüten');
 assert.equal(SPECIES_LIST.length, 6, 'Sechs Baumarten');
 
 // --- Zustands-Normalisierung ---

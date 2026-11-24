@@ -1,7 +1,7 @@
 // Die große Wald-Ansicht als SVG – inklusive Weihnachtszeit (Christbaum, Schnee).
 // Reine String-Erzeugung ohne DOM, damit App und Vorschau dieselbe Szene nutzen.
 
-import { treeSVG, stageForMinutes, mulberry32 } from './trees.js';
+import { treeSVG, stageForMinutes, meadowStageForMinutes, mulberry32 } from './trees.js';
 import { christmasState, christmasTreeSVG } from './christmas.js';
 
 function esc(value) {
@@ -86,7 +86,7 @@ export function forestSceneHTML(sessions, options = {}) {
     const x = Math.min(forestRight - 55, Math.max(55, centerX + Math.cos(angle) * radius * (spreadX / 2)));
     const y = Math.min(groundY + 18, Math.max(groundY - 86, centerY + Math.sin(angle) * radius * spreadY));
     const depth = Math.min(1, Math.max(0, (y - (groundY - 86)) / 104));
-    const scaleBase = 0.60 + (Math.min(50, minutes) / 50) * 0.72;
+    const scaleBase = 0.60 + (Math.min(60, minutes) / 60) * 0.72;
     const scale = scaleBase * (0.90 + depth * 0.16);
     return { s, minutes, scale, x, y, depth };
   });
@@ -149,7 +149,7 @@ export function forestSceneHTML(sessions, options = {}) {
       p.x = Math.min(boundMaxX, Math.max(boundMinX, p.x));
       p.y = Math.min(boundMaxY, Math.max(boundMinY, p.y));
       p.depth = Math.min(1, Math.max(0, (p.y - boundMinY) / (boundMaxY - boundMinY)));
-      const scaleBase = 0.60 + (Math.min(50, p.minutes) / 50) * 0.72;
+      const scaleBase = 0.60 + (Math.min(60, p.minutes) / 60) * 0.72;
       p.scale = scaleBase * (0.90 + p.depth * 0.16);
     }
   }
@@ -246,7 +246,8 @@ export function forestSceneHTML(sessions, options = {}) {
 
   const treeGroups = placed.map(({ s, scale, x, y, depth }) => {
     const stage = stageForMinutes(s.minutes);
-    const inner = treeSVG(s.species, stage, s.seed, '', winter)
+    const meadowStage = meadowStageForMinutes(s.minutes);
+    const inner = treeSVG(s.species, stage, s.seed, '', winter, meadowStage)
       .replace(/^<svg[^>]*>/, '')
       .replace(/<\/svg>$/, '')
       .replace(/<ellipse[^>]*cx="50"[^>]*cy="133"[^>]*\/>/, ''); // Bodenschatten des Einzelbaums entfernen

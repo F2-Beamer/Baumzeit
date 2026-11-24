@@ -29,7 +29,7 @@ export function mulberry32(seed) {
   };
 }
 
-export function treeSVG(speciesId, stage, seed, cls, snow) {
+export function treeSVG(speciesId, stage, seed, cls, snow, meadowStage = 0) {
   const pal = SPECIES[speciesId] || SPECIES.eiche;
   const rnd = mulberry32((Number(seed) || 1) * 7919 + 13);
   const base = 132;
@@ -122,25 +122,65 @@ export function treeSVG(speciesId, stage, seed, cls, snow) {
     }
   }
 
-  return '<svg class="' + (cls || '') + '" viewBox="0 0 100 140" aria-hidden="true">' + ground + body + '</svg>';
+  let meadow = '';
+  const ms = Math.max(0, Math.min(4, Number(meadowStage) || 0));
+  if (ms > 0) {
+    if (ms >= 1) {
+      meadow += '<path d="M28 132 C32 125 35 125 39 132" fill="#7da462" opacity=".95"/>';
+      meadow += '<path d="M61 132 C65 125 68 125 72 132" fill="#7da462" opacity=".95"/>';
+      meadow += '<path d="M38 132 C41 127 44 127 47 132" fill="#90b36f" opacity=".9"/>';
+      meadow += '<path d="M53 132 C56 127 59 127 62 132" fill="#90b36f" opacity=".9"/>';
+    }
+    if (ms >= 2) {
+      meadow += '<path d="M20 132 C24 124 28 124 32 132" fill="#739a5a" opacity=".95"/>';
+      meadow += '<path d="M68 132 C72 124 76 124 80 132" fill="#739a5a" opacity=".95"/>';
+      meadow += '<g><path d="M24 132 L24 126.2" stroke="#648b52" stroke-width="1.2" stroke-linecap="round"/><circle cx="24" cy="124.8" r="2" fill="#f2cf6e"/><circle cx="24" cy="124.8" r=".75" fill="#fff6cf"/></g>';
+      meadow += '<g><path d="M76 132 L76 126.2" stroke="#648b52" stroke-width="1.2" stroke-linecap="round"/><circle cx="76" cy="124.8" r="2" fill="#e8a9be"/><circle cx="76" cy="124.8" r=".75" fill="#fff3f7"/></g>';
+    }
+    if (ms >= 3) {
+      meadow += '<path d="M14 132 C19 123 23 123 28 132" fill="#6f9558" opacity=".95"/>';
+      meadow += '<path d="M72 132 C77 123 81 123 86 132" fill="#6f9558" opacity=".95"/>';
+      meadow += '<g><path d="M33 132 L33 125.8" stroke="#5f864f" stroke-width="1.1" stroke-linecap="round"/><circle cx="33" cy="124.4" r="1.8" fill="#ffffff"/><circle cx="33" cy="124.4" r=".7" fill="#ffe889"/></g>';
+      meadow += '<g><path d="M67 132 L67 125.8" stroke="#5f864f" stroke-width="1.1" stroke-linecap="round"/><circle cx="67" cy="124.4" r="1.8" fill="#b9d7ff"/><circle cx="67" cy="124.4" r=".7" fill="#fff9d2"/></g>';
+    }
+    if (ms >= 4) {
+      meadow = '<ellipse cx="50" cy="132.5" rx="34" ry="4.8" fill="#8fb46a" opacity=".32"/>' + meadow;
+      meadow += '<path d="M44 132 C46 126.5 48 126.5 50 132" fill="#97bb76" opacity=".95"/>';
+      meadow += '<path d="M50 132 C52 126.5 54 126.5 56 132" fill="#97bb76" opacity=".95"/>';
+      meadow += '<g><path d="M17 132 L17 124.5" stroke="#5f864f" stroke-width="1.2" stroke-linecap="round"/><circle cx="17" cy="123" r="2.1" fill="#f4d275"/><circle cx="17" cy="123" r=".8" fill="#fff8d8"/></g>';
+      meadow += '<g><path d="M41 132 L41 126.2" stroke="#5f864f" stroke-width="1.1" stroke-linecap="round"/><circle cx="41" cy="124.8" r="1.7" fill="#f0a8c0"/><circle cx="41" cy="124.8" r=".65" fill="#fff1f6"/></g>';
+      meadow += '<g><path d="M59 132 L59 126.2" stroke="#5f864f" stroke-width="1.1" stroke-linecap="round"/><circle cx="59" cy="124.8" r="1.7" fill="#f4d275"/><circle cx="59" cy="124.8" r=".65" fill="#fff8d8"/></g>';
+      meadow += '<g><path d="M83 132 L83 124.5" stroke="#5f864f" stroke-width="1.2" stroke-linecap="round"/><circle cx="83" cy="123" r="2.1" fill="#b9d7ff"/><circle cx="83" cy="123" r=".8" fill="#fff9d2"/></g>';
+    }
+  }
+
+  return '<svg class="' + (cls || '') + '" viewBox="0 0 100 140" aria-hidden="true">' + ground + body + meadow + '</svg>';
 }
 
 // Größe im Wald richtet sich nach der tatsächlichen Lernzeit.
 export function stageForMinutes(minutes) {
-  if (minutes >= 20) return 4;
-  if (minutes >= 10) return 3;
-  if (minutes >= 4) return 2;
+  if (minutes >= 60) return 4;
+  if (minutes >= 30) return 3;
+  if (minutes >= 15) return 2;
   return 1;
 }
 
+export function meadowStageForMinutes(minutes) {
+  if (minutes >= 120) return 4;
+  if (minutes >= 105) return 3;
+  if (minutes >= 90) return 2;
+  if (minutes >= 75) return 1;
+  return 0;
+}
+
 export function heightForMinutes(minutes) {
-  const clamped = Math.max(1, Math.min(50, minutes));
-  return Math.round(38 + (clamped / 50) * 52);
+  const clamped = Math.max(1, Math.min(60, minutes));
+  return Math.round(38 + (clamped / 60) * 52);
 }
 
 export function stageForProgress(progress) {
-  if (progress < 0.18) return 1;
-  if (progress < 0.45) return 2;
+  if (progress < 0.25) return 1;
+  if (progress < 0.5) return 2;
   if (progress < 0.75) return 3;
   return 4;
 }

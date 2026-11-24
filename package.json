@@ -1,7 +1,7 @@
 {
   "name": "baumzeit",
   "private": true,
-  "version": "0.3.1",
+  "version": "0.3.2",
   "type": "module",
   "description": "Baumzeit â€“ ruhiger Fokus-Timer mit wachsendem Wald",
   "scripts": {

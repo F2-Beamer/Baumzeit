@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Baumzeit – Wiesen-Vorschau</title>
+  <style>
+    :root { color-scheme: light; }
+    body { margin: 0; font-family: "Segoe UI", system-ui, sans-serif; background: #f4f1eb; color: #2f3a2f; }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 32px 20px 48px; }
+    h1 { margin: 0 0 8px; font-size: 28px; font-weight: 600; }
+    p.lead { margin: 0 0 28px; color: #5d685c; max-width: 720px; line-height: 1.5; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .card { background: #fffdf8; border: 1px solid #ddd6ca; border-radius: 18px; padding: 20px; box-shadow: 0 8px 24px rgba(46,56,48,.06); }
+    .card h2 { margin: 0 0 4px; font-size: 18px; font-weight: 600; }
+    .card .meta { color: #667366; font-size: 14px; margin-bottom: 16px; }
+    .preview { background: linear-gradient(180deg, #eef6ea 0%, #dfead8 58%, #d2c4ab 58%, #cdbd9f 100%); border-radius: 14px; padding: 18px; display: flex; align-items: end; justify-content: center; min-height: 320px; }
+    .preview svg { width: 220px; height: auto; display: block; }
+    .legend { margin-top: 14px; font-size: 13px; color: #5d685c; line-height: 1.5; }
+    .swatches { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+    .swatch { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #5d685c; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .note { margin-top: 28px; padding: 14px 16px; background: #edf4e8; border: 1px solid #cfe0c7; border-radius: 12px; color: #465646; font-size: 14px; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Blumenwiese – Beispielvorschau</h1>
+    <p class="lead">Konzeptbeispiel für den geplanten Stand: Der Baum ist vollständig ausgewachsen (Stufe 4, ab 60 Minuten). Danach wächst in 60 weiteren Minuten eine Blumenwiese in 4 Stufen um den Baum.</p>
+
+    <div class="grid">
+      <div class="card">
+        <h2>Baum Stufe 4 + Wiese Stufe 2</h2>
+        <div class="meta">Beispiel bei ca. 90 Minuten Lernzeit</div>
+        <div class="preview">
+          <svg viewBox="0 0 100 140" aria-label="Ausgewachsener Baum mit Blumenwiese Stufe 2" role="img">
+            <ellipse cx="50" cy="133" rx="23" ry="4.5" fill="rgba(46,56,48,.10)"/>
+            <!-- Baum Stufe 4 (Eiche) -->
+            <path d="M47.9 132 C48.2 114 48.6 84 49.4 71 L50.6 71 C51.4 84 51.8 114 52.1 132 Z" fill="#7b5c45"/>
+            <path d="M50 106 C55 102 58 98 61 94" stroke="#7b5c45" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <path d="M50 112 C45 108 42 104 39 101" stroke="#7b5c45" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <ellipse cx="51.8" cy="57.4" rx="23.0" ry="20.7" fill="#3a5a43"/>
+            <ellipse cx="35.8" cy="73.4" rx="15.0" ry="13.5" fill="#3a5a43"/>
+            <ellipse cx="67.8" cy="73.4" rx="15.0" ry="13.5" fill="#3a5a43"/>
+            <ellipse cx="43.8" cy="45.4" rx="14.0" ry="12.6" fill="#3a5a43"/>
+            <ellipse cx="59.8" cy="45.4" rx="14.0" ry="12.6" fill="#3a5a43"/>
+            <ellipse cx="51.8" cy="77.4" rx="14.0" ry="12.6" fill="#3a5a43"/>
+            <ellipse cx="49.9" cy="54.3" rx="23.0" ry="20.7" fill="#4a7352"/>
+            <ellipse cx="34.8" cy="70.2" rx="15.0" ry="13.5" fill="#5d8a63"/>
+            <ellipse cx="65.4" cy="70.8" rx="15.0" ry="13.5" fill="#74a07a"/>
+            <ellipse cx="41.4" cy="42.0" rx="14.0" ry="12.6" fill="#8db392"/>
+            <ellipse cx="57.6" cy="41.7" rx="14.0" ry="12.6" fill="#4a7352"/>
+            <ellipse cx="50.9" cy="75.0" rx="14.0" ry="12.6" fill="#5d8a63"/>
+            <ellipse cx="44" cy="38" rx="6" ry="5" fill="#8db392" opacity=".7"/>
+            <ellipse cx="58" cy="34" rx="5" ry="4.5" fill="#8db392" opacity=".6"/>
+
+            <!-- Wiese Stufe 2: Grasbüschel + erste Blüten -->
+            <g id="meadow-2">
+              <path d="M18 132 C23 125 26 125 30 132" fill="#7ca063" opacity=".95"/>
+              <path d="M27 132 C31 123 35 123 39 132" fill="#6f9558" opacity=".95"/>
+              <path d="M61 132 C65 123 69 123 73 132" fill="#6f9558" opacity=".95"/>
+              <path d="M70 132 C74 125 77 125 82 132" fill="#7ca063" opacity=".95"/>
+              <path d="M36 132 C40 127 43 127 47 132" fill="#89aa68" opacity=".9"/>
+              <path d="M53 132 C57 127 60 127 64 132" fill="#89aa68" opacity=".9"/>
+              <!-- kleine Blüten -->
+              <g>
+                <path d="M24 132 L24 126" stroke="#648b52" stroke-width="1.2" stroke-linecap="round"/>
+                <circle cx="24" cy="124.5" r="2.1" fill="#f2cf6e"/>
+                <circle cx="24" cy="124.5" r="0.8" fill="#fff6cf"/>
+              </g>
+              <g>
+                <path d="M76 132 L76 126" stroke="#648b52" stroke-width="1.2" stroke-linecap="round"/>
+                <circle cx="76" cy="124.5" r="2.1" fill="#e8a9be"/>
+                <circle cx="76" cy="124.5" r="0.8" fill="#fff3f7"/>
+              </g>
+              <g>
+                <path d="M67 132 L67 127.5" stroke="#648b52" stroke-width="1.1" stroke-linecap="round"/>
+                <circle cx="67" cy="126.2" r="1.7" fill="#f0f3ff"/>
+                <circle cx="67" cy="126.2" r="0.65" fill="#fffad1"/>
+              </g>
+            </g>
+          </svg>
+        </div>
+        <div class="legend">Baum voll ausgewachsen, Wiese beginnt sichtbar: mehrere Grasbüschel und einzelne Blüten.</div>
+      </div>
+
+      <div class="card">
+        <h2>Baum Stufe 4 + Wiese Stufe 4</h2>
+        <div class="meta">Beispiel bei ca. 120 Minuten Lernzeit</div>
+        <div class="preview">
+          <svg viewBox="0 0 100 140" aria-label="Ausgewachsener Baum mit Blumenwiese Stufe 4" role="img">
+            <ellipse cx="50" cy="133" rx="23" ry="4.5" fill="rgba(46,56,48,.10)"/>
+            <!-- Baum Stufe 4 (Eiche) -->
+            <path d="M47.9 132 C48.2 114 48.6 84 49.4 71 L50.6 71 C51.4 84 51.8 114 52.1 132 Z" fill="#7b5c45"/>
+            <path d="M50 106 C55 102 58 98 61 94" stroke="#7b5c45" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <path d="M50 112 C45 108 42 104 39 101" stroke="#7b5c45" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <ellipse cx="51.8" cy="57.4" rx="23.0" ry="20.7" fill="#3a5a43"/>
+            <ellipse cx="35.8" cy="73.4" rx="15.0" ry="13.5" fill="#3a5a43"/>
+            <ellipse cx="67.8" cy="73.4" rx="15.0" ry="13.5" fill="#3a5a43"/>
+            <ellipse cx="43.8" cy="45.4" rx="14.0" ry="12.6" fill="#3a5a43"/>
+            <ellipse cx="59.8" cy="45.4" rx="14.0" ry="12.6" fill="#3a5a43"/>
+            <ellipse cx="51.8" cy="77.4" rx="14.0" ry="12.6" fill="#3a5a43"/>
+            <ellipse cx="49.9" cy="54.3" rx="23.0" ry="20.7" fill="#4a7352"/>
+            <ellipse cx="34.8" cy="70.2" rx="15.0" ry="13.5" fill="#5d8a63"/>
+            <ellipse cx="65.4" cy="70.8" rx="15.0" ry="13.5" fill="#74a07a"/>
+            <ellipse cx="41.4" cy="42.0" rx="14.0" ry="12.6" fill="#8db392"/>
+            <ellipse cx="57.6" cy="41.7" rx="14.0" ry="12.6" fill="#4a7352"/>
+            <ellipse cx="50.9" cy="75.0" rx="14.0" ry="12.6" fill="#5d8a63"/>
+            <ellipse cx="44" cy="38" rx="6" ry="5" fill="#8db392" opacity=".7"/>
+            <ellipse cx="58" cy="34" rx="5" ry="4.5" fill="#8db392" opacity=".6"/>
+
+            <!-- Wiese Stufe 4: volle Wiese mit vielen Blüten -->
+            <g id="meadow-4">
+              <ellipse cx="50" cy="132.5" rx="34" ry="4.8" fill="#8fb46a" opacity=".35"/>
+              <path d="M12 132 C18 122 22 122 28 132" fill="#739a5a"/>
+              <path d="M22 132 C27 120 32 120 38 132" fill="#7da462"/>
+              <path d="M32 132 C37 124 41 124 46 132" fill="#8db36d"/>
+              <path d="M54 132 C59 124 63 124 68 132" fill="#8db36d"/>
+              <path d="M62 132 C68 120 73 120 78 132" fill="#7da462"/>
+              <path d="M72 132 C78 122 82 122 88 132" fill="#739a5a"/>
+              <path d="M40 132 C43 126 46 126 49 132" fill="#97bb76" opacity=".95"/>
+              <path d="M51 132 C54 126 57 126 60 132" fill="#97bb76" opacity=".95"/>
+
+              <!-- Blüten links -->
+              <g><path d="M17 132 L17 124" stroke="#5f864f" stroke-width="1.2"/><circle cx="17" cy="122.5" r="2.2" fill="#f4d275"/><circle cx="17" cy="122.5" r=".85" fill="#fff8d8"/></g>
+              <g><path d="M25 132 L25 125.5" stroke="#5f864f" stroke-width="1.1"/><circle cx="25" cy="124.2" r="1.9" fill="#f0a8c0"/><circle cx="25" cy="124.2" r=".75" fill="#fff1f6"/></g>
+              <g><path d="M33 132 L33 123.5" stroke="#5f864f" stroke-width="1.2"/><circle cx="33" cy="122" r="2.1" fill="#ffffff"/><circle cx="33" cy="122" r=".8" fill="#ffe889"/></g>
+              <g><path d="M41 132 L41 126" stroke="#5f864f" stroke-width="1.1"/><circle cx="41" cy="124.7" r="1.8" fill="#b9d7ff"/><circle cx="41" cy="124.7" r=".7" fill="#fff9d2"/></g>
+
+              <!-- Blüten rechts -->
+              <g><path d="M59 132 L59 126" stroke="#5f864f" stroke-width="1.1"/><circle cx="59" cy="124.7" r="1.8" fill="#f0a8c0"/><circle cx="59" cy="124.7" r=".7" fill="#fff1f6"/></g>
+              <g><path d="M67 132 L67 123.5" stroke="#5f864f" stroke-width="1.2"/><circle cx="67" cy="122" r="2.1" fill="#f4d275"/><circle cx="67" cy="122" r=".8" fill="#fff8d8"/></g>
+              <g><path d="M75 132 L75 125.5" stroke="#5f864f" stroke-width="1.1"/><circle cx="75" cy="124.2" r="1.9" fill="#ffffff"/><circle cx="75" cy="124.2" r=".75" fill="#ffe889"/></g>
+              <g><path d="M83 132 L83 124" stroke="#5f864f" stroke-width="1.2"/><circle cx="83" cy="122.5" r="2.2" fill="#b9d7ff"/><circle cx="83" cy="122.5" r=".85" fill="#fff9d2"/></g>
+            </g>
+          </svg>
+        </div>
+        <div class="legend">Volle Blumenwiese: dichter Grasring um den Baum, deutlich mehr und buntere Blüten.</div>
+      </div>
+    </div>
+
+    <div class="swatches" aria-label="Farblegende">
+      <span class="swatch"><span class="dot" style="background:#7da462"></span>Gras</span>
+      <span class="swatch"><span class="dot" style="background:#f4d275"></span>gelbe Blüte</span>
+      <span class="swatch"><span class="dot" style="background:#f0a8c0"></span>rosa Blüte</span>
+      <span class="swatch"><span class="dot" style="background:#ffffff; border:1px solid #cad3c2"></span>weiße Blüte</span>
+      <span class="swatch"><span class="dot" style="background:#b9d7ff"></span>blaue Blüte</span>
+    </div>
+
+    <div class="note">
+      <strong>Hinweis:</strong> Das ist eine visuelle Konzeptvorschau, keine Implementierung im Produktcode. Die finale Umsetzung sollte an den bestehenden Baumstil, die ViewBox und die Wald-/Verlaufsdarstellung angepasst werden.
+    </div>
+  </div>
+</body>
+</html>

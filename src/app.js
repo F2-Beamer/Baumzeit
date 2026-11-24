@@ -1,7 +1,7 @@
 ﻿import { invoke } from '@tauri-apps/api/core';
 import { emit, listen } from '@tauri-apps/api/event';
 import {
-  SPECIES, SPECIES_LIST, treeSVG, stageForMinutes, stageForProgress
+  SPECIES, SPECIES_LIST, treeSVG, stageForMinutes, meadowStageForMinutes
 } from './trees.js';
 import { forestSceneHTML } from './forest.js';
 import {
@@ -39,20 +39,24 @@ function fmtClock(ms) {
   return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
 }
 
-function treeHTML(species, stage, seed, height, cls = '') {
-  return treeSVG(species, stage, seed, cls)
+function treeHTML(species, stage, seed, height, cls = '', meadowStage = 0) {
+  return treeSVG(species, stage, seed, cls, false, meadowStage)
     .replace('<svg', `<svg style="height:${Math.round(height)}px;width:auto"`);
 }
 
-// Voll ausgewachsener Baum (50 Min) füllt die Verlaufshöhe; andere proportional.
+// Voll ausgewachsener Baum (60 Min) füllt die Verlaufshöhe; andere proportional.
 function historyTreeHeight(minutes) {
-  const clamped = Math.max(1, Math.min(50, Number(minutes) || 1));
-  return Math.round(28 + (clamped / 50) * 76);
+  const clamped = Math.max(1, Math.min(60, Number(minutes) || 1));
+  return Math.round(28 + (clamped / 60) * 76);
 }
 
 function stageLabel(minutes) {
   const stage = stageForMinutes(minutes);
-  return ['Setzling', 'Kleiner Baum', 'Wachsender Baum', 'Voll ausgewachsen'][stage - 1] || 'Setzling';
+  const tree = ['Setzling', 'Kleiner Baum', 'Wachsender Baum', 'Voll ausgewachsen'][stage - 1] || 'Setzling';
+  const meadow = meadowStageForMinutes(minutes);
+  if (meadow <= 0) return tree;
+  const meadowLabel = ['Kleine Wiese', 'Wiese mit ersten Blüten', 'Bunte Wiese', 'Volle Blumenwiese'][meadow - 1] || 'Blumenwiese';
+  return `${tree} · ${meadowLabel}`;
 }
 
 function formatDurationDE(minutes) {
@@ -128,6 +132,7 @@ function normalizeSession(raw) {
     species: SPECIES[raw.species] ? raw.species : 'eiche',
     seed: Number(raw.seed) || 1,
     stage: stageForMinutes(minutes),
+    meadowStage: meadowStageForMinutes(minutes),
     completed: raw.completed === true
   };
 }
@@ -383,6 +388,7 @@ export class App {
       species: SPECIES[species] ? species : 'eiche',
       seed: Number(seed) || 1,
       stage: stageForMinutes(minutes),
+      meadowStage: meadowStageForMinutes(minutes),
       completed
     });
     this.syncUnlocks();
@@ -477,13 +483,14 @@ export class App {
     // Baum
     const species = a ? a.species : this.currentSpecies();
     const seed = a ? a.seed : 7;
-    const stage = a ? (a.phase === 'break' ? 4 : stageForProgress(progress)) : 3;
-    const key = `${species}|${stage}|${seed}`;
+    const stage = a ? (a.phase === 'break' ? 4 : stageForMinutes(elapsedMin)) : 3;
+    const meadow = a && a.phase === 'focus' ? meadowStageForMinutes(elapsedMin) : 0;
+    const key = `${species}|${stage}|${meadow}|${seed}`;
     if (key !== this.lastTreeKey) {
       this.lastTreeKey = key;
       const host = this.$('bigTree');
       if (host) {
-        host.innerHTML = treeSVG(species, stage, seed, 'sway');
+        host.innerHTML = treeSVG(species, stage, seed, 'sway', false, meadow);
         const svg = host.querySelector('svg');
         if (svg) {
           svg.style.height = '224px';
@@ -592,7 +599,7 @@ export class App {
       return;
     }
     host.innerHTML = recent.map((s) => (
-      `<span class="slot">${treeHTML(s.species, stageForMinutes(s.minutes), s.seed, historyTreeHeight(s.minutes))}</span>`
+      `<span class="slot">${treeHTML(s.species, stageForMinutes(s.minutes), s.seed, historyTreeHeight(s.minutes), '', meadowStageForMinutes(s.minutes))}</span>`
     )).join('');
     const latest = new Date(recent[0].endedAt);
     const now = new Date();
@@ -626,7 +633,7 @@ export class App {
           const trees = g.trees.map((t) => {
             const speciesName = SPECIES_LIST.find((sp) => sp.id === t.species)?.name || 'Baum';
             const tip = `Wann: ${formatDateTimeDE(t.endedAt)}\nLernzeit: ${formatDurationDE(t.minutes)}\nBaum: ${speciesName} – ${stageLabel(t.minutes)}`;
-            return `<span class="slot" title="${escapeAttr(tip)}">${treeHTML(t.species, stageForMinutes(t.minutes), t.seed, historyTreeHeight(t.minutes))}</span>`;
+            return `<span class="slot" title="${escapeAttr(tip)}">${treeHTML(t.species, stageForMinutes(t.minutes), t.seed, historyTreeHeight(t.minutes), '', meadowStageForMinutes(t.minutes))}</span>`;
           }).join('');
           return `<div class="day">
             <div class="day-head"><span class="day-name">${escapeHTML(heading)} <span class="day-date">${escapeHTML(dateText)}</span></span><span class="day-meta">${escapeHTML(meta)}</span></div>
@@ -1055,7 +1062,9 @@ export class App {
     const elapsed = a ? this.elapsedMs(a, now) : 0;
     const remaining = Math.max(0, target - elapsed);
     const progress = a ? Math.min(elapsed / target, 1) : 0;
-    const stage = a ? (a.phase === 'break' ? 4 : stageForProgress(progress)) : 3;
+    const elapsedMin = a ? Math.floor(elapsed / 60000) : 0;
+    const stage = a ? (a.phase === 'break' ? 4 : stageForMinutes(elapsedMin)) : 3;
+    const meadowStage = a && a.phase === 'focus' ? meadowStageForMinutes(elapsedMin) : 0;
     const targetMin = Math.max(1, Math.round(target / 60000));
     let sub;
     if (!a) sub = `Bereit · ${targetMin} Min`;
@@ -1074,6 +1083,7 @@ export class App {
       species: a ? a.species : this.currentSpecies(),
       seed: a ? a.seed : 7,
       stage,
+      meadowStage,
       sub
     }).catch(() => {});
   }
@@ -1133,6 +1143,7 @@ export class App {
     let species = 'eiche';
     let seed = 7;
     let stage = 3;
+    let meadowStage = 0;
     let sub = 'Bereit';
 
     if (snap) {
@@ -1141,6 +1152,7 @@ export class App {
       species = snap.species || 'eiche';
       seed = snap.seed || 7;
       stage = snap.stage || 3;
+      meadowStage = Number(snap.meadowStage) || 0;
       sub = snap.sub || 'Bereit';
       const drift = snap.running ? Math.max(0, now - this.snapshotAt) : 0;
       remaining = Math.max(0, snap.remainingMs - drift);
@@ -1151,12 +1163,12 @@ export class App {
     const subEl = this.$('miniSub');
     if (subEl) subEl.textContent = sub;
 
-    const treeKey = `${species}|${stage}|${seed}`;
+    const treeKey = `${species}|${stage}|${meadowStage}|${seed}`;
     if (treeKey !== this.miniTreeKey) {
       this.miniTreeKey = treeKey;
       const host = this.$('miniTree');
       if (host) {
-        host.innerHTML = treeSVG(species, stage, seed);
+        host.innerHTML = treeSVG(species, stage, seed, '', false, meadowStage);
         const svg = host.querySelector('svg');
         if (svg) {
           svg.style.height = '42px';
