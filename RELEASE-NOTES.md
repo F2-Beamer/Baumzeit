@@ -1,5 +1,14 @@
 # Release Notes – Baumzeit
 
+## v0.3.1 (24.11.2026) – Waldabstände feiner
+
+### Geändert
+- **Waldansicht:** Mindestabstand zwischen Bäumen halbiert, damit der Wald dichter wirkt. Der horizontale Mindestversatz bleibt bestehen, sodass keine Bäume direkt hintereinander stehen.
+
+### Artefakte
+- Installer: `Baumzeit_0.3.1_x64-setup.exe`
+- Portable: `Baumzeit-portable-0.3.1.exe`
+
 ## v0.3.0 (24.11.2026) – Weihnachtszeit im Wald
 
 ### Neu

@@ -89,7 +89,72 @@ export function forestSceneHTML(sessions, options = {}) {
     const scaleBase = 0.60 + (Math.min(50, minutes) / 50) * 0.72;
     const scale = scaleBase * (0.90 + depth * 0.16);
     return { s, minutes, scale, x, y, depth };
-  }).sort((a, b) => a.y - b.y || a.x - b.x);
+  });
+
+  // Mindestabstand erzwingen, damit Bäume nicht ineinander stehen und
+  // keine Bäume direkt hintereinander (gleiche Sichtlinie) stehen.
+  const boundMinX = 55;
+  const boundMaxX = forestRight - 55;
+  const boundMinY = groundY - 86;
+  const boundMaxY = groundY + 18;
+  for (let iter = 0; iter < 14; iter += 1) {
+    for (let i = 0; i < placed.length; i += 1) {
+      for (let j = i + 1; j < placed.length; j += 1) {
+        const a = placed[i];
+        const b = placed[j];
+        let dx = b.x - a.x;
+        let dy = b.y - a.y;
+        const avgScale = (a.scale + b.scale) / 2;
+        const needX = 36 * avgScale;
+        const needY = 17 * avgScale;
+        const behindX = 27 * avgScale;
+        const nx = dx / needX;
+        const ny = dy / needY;
+        const dist = Math.sqrt(nx * nx + ny * ny);
+
+        if (dist < 1) {
+          let ox = nx;
+          let oy = ny;
+          let od = dist;
+          if (od < 0.0001) {
+            // Deterministischer Fallback, wenn zwei Bäume exakt übereinander liegen.
+            const jitter = mulberry32((i + 1) * 9173 + (j + 1) * 1013);
+            const ang = jitter() * Math.PI * 2;
+            ox = Math.cos(ang);
+            oy = Math.sin(ang);
+            od = 1;
+          }
+          const push = (1 - Math.min(od, 0.999)) * 0.5;
+          const px = (ox / od) * push * needX;
+          const py = (oy / od) * push * needY;
+          a.x -= px;
+          a.y -= py;
+          b.x += px;
+          b.y += py;
+        }
+
+        // Nie direkt hintereinander: auch bei großem Tiefenabstand muss ein
+        // horizontaler Versatz bleiben, damit beide Bäume sichtbar sind.
+        const dxAfter = b.x - a.x;
+        if (Math.abs(dxAfter) < behindX) {
+          const dir = dxAfter === 0 ? ((i + j) % 2 === 0 ? 1 : -1) : (dxAfter < 0 ? -1 : 1);
+          const pushX = (behindX - Math.abs(dxAfter)) * 0.5;
+          a.x -= dir * pushX;
+          b.x += dir * pushX;
+        }
+      }
+    }
+
+    for (const p of placed) {
+      p.x = Math.min(boundMaxX, Math.max(boundMinX, p.x));
+      p.y = Math.min(boundMaxY, Math.max(boundMinY, p.y));
+      p.depth = Math.min(1, Math.max(0, (p.y - boundMinY) / (boundMaxY - boundMinY)));
+      const scaleBase = 0.60 + (Math.min(50, p.minutes) / 50) * 0.72;
+      p.scale = scaleBase * (0.90 + p.depth * 0.16);
+    }
+  }
+
+  placed.sort((a, b) => a.y - b.y || a.x - b.x);
 
   // Christbaum rechts neben dem Hain, deutlich größer als die Waldbäume.
   const xmasScale = 1;

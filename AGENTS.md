@@ -5,7 +5,7 @@
 - `npm run tauri dev` – komplette Desktop-App (Tauri + Vite devUrl `http://localhost:1420`).
 - `npm run check` – Node-Logiktests (`tests/check.mjs`); kein DOM/Tauri, läuft direkt mit Node.
 - `npm run build` – Vite-Produktionsbuild nach `dist/`.
-- `npm run tauri build` – Release-Build (portable EXE + NSIS-Installer unter `src-tauri/target/release/...`).
+- `npm run tauri build` – Release-Build. Portable EXE: `src-tauri/target/release/baumzeit.exe`. NSIS-Installer: `src-tauri/target/release/bundle/nsis/Baumzeit_<version>_x64-setup.exe`.
 - Rust prüfen: `cd src-tauri; cargo check`. In PowerShell kann Cargo-Stderr als Fehler wirken; Exitcode prüfen (`$LASTEXITCODE`).
 
 ## Architektur
@@ -19,6 +19,6 @@
 - **State-Änderungen:** Bei neuen Feldern immer `normalizeState()`/Defaults, relevante `tests/check.mjs`-Fälle und ggf. Migration/Kompatibilität mit bestehender `wald.json` beachten.
 - **Sicherheit:** CSP in `src-tauri/tauri.conf.json` nicht deaktivieren; Capabilities in `src-tauri/capabilities/default.json` minimal halten. `save_state` prüft Größe und Top-Level-Form. Bei HTML-Ausgabe `escapeHTML`/`escapeAttr` verwenden; `innerHTML` nur mit bewusst sicheren/statischen Daten.
 - **Version-Bump (Release):** `package.json`, `package-lock.json`, `src-tauri/Cargo.toml`, `src-tauri/Cargo.lock`, `src-tauri/tauri.conf.json`, `README.md` (Installer-Dateiname), ggf. `PLAN.md`/Release Notes. Danach `npm run check`, `npm run build`, `npm run tauri build`.
-- **Artefakte:** `dist/`, `release/`, `src-tauri/target/`, `src-tauri/gen/` sind gitignored. Release-EXEs werden nach `release/` kopiert und für GitHub-Releases hochgeladen.
+- **Artefakte:** `dist/`, `release/`, `src-tauri/target/`, `src-tauri/gen/` sind gitignored. Nach `npm run tauri build` für Releases die portable EXE als `release/Baumzeit-portable-<version>.exe` und den NSIS-Installer aus `src-tauri/target/release/bundle/nsis/` nach `release/` kopieren; Upload über GitHub Releases.
 - **Weihnachtszeit:** Datum/Deko kommt aus `src/christmas.js`; Wald-Darstellung aus `src/forest.js`. Vorschau-SVGs neu erzeugen: `node scripts/christmas-preview.mjs`.
 - **Windows/Encoding:** Beim Schreiben von JSON/TOML/MD per Shell UTF-8 **ohne BOM** verwenden; BOM kann Vite/Tooling brechen.
