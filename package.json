@@ -1,9 +1,9 @@
 {
   "name": "baumzeit",
   "private": true,
-  "version": "0.2.8",
+  "version": "0.3.0",
   "type": "module",
-  "description": "Baumzeit – ruhiger Fokus-Timer mit wachsendem Wald",
+  "description": "Baumzeit â€“ ruhiger Fokus-Timer mit wachsendem Wald",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

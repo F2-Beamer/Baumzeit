@@ -4,7 +4,7 @@ Fokus-Timer für Windows 11, bei dem während des Lernens ein Baum wächst und d
 
 - **Projektordner:** `D:\Users\f2bea\KI-APPs-D\MeinWald`
 - **Design-Vorschau:** `design\preview.html` (freigegeben am 21.11.2026)
-- **Status:** umgesetzt als Version 0.2.8 (M1–M8 fertig, Layout-Fix, Verlauf-Tooltips, Chart-Format, Feedback-Formular)
+- **Status:** umgesetzt als Version 0.3.0 (M1–M8 fertig, Layout-Fix, Verlauf-Tooltips, Chart-Format, Feedback-Formular, Weihnachtszeit im Wald)
 
 ---
 
@@ -30,6 +30,7 @@ Eine ruhige, entspannte Desktop-App: Lernzeit starten, Baum wächst live mit, am
 | Statistik | **kompakt**: Heute, Woche, Gesamt, Streak, 7-Tage-Balken |
 | Sound | **nur Endsignal** (Glockenton, per WebAudio erzeugt, keine Audiodateien) |
 | Design | **ruhig & modern**, handgezeichnet wirkende SVG-Bäume, Hell/Dunkel/System |
+| Saison | **Weihnachtszeit** 1.–26. Dezember: Christbaum rechts vom Wald, täglich abwechselnd Kerze und Kugel, Stern ab 24., Schnee – per Schalter abschaltbar |
 | Name | **Baumzeit** |
 | Verteilung | **NSIS-Installer + portable .exe** |
 | Sprache | **nur Deutsch** |
@@ -72,6 +73,8 @@ MeinWald/
 │  ├─ main.js                   ← Bootstrap, Routing Haupt/Mini
 │  ├─ app.js                    ← Zustand, Timer, Rendering
 │  ├─ trees.js                  ← SVG-Generator (Arten, Stufen, Seeds)
+│  ├─ forest.js                 ← große Wald-Ansicht als SVG (inkl. Winter/Christbaum)
+│  ├─ christmas.js              ← Weihnachtszeit: Datumsfenster und Christbaum-SVG
 │  ├─ stats.js                  ← Auswertung (Tag, Woche, Streak)
 │  ├─ storage.js                ← Laden/Speichern (Tauri invoke)
 │  ├─ sound.js                  ← WebAudio-Glocke
@@ -262,7 +265,7 @@ Artefakte:
 
 - Installer: `src-tauri/target/release/bundle/nsis/Baumzeit_<version>_x64-setup.exe`
 - Portable: `src-tauri/target/release/baumzeit.exe`
-- Versionierung: `0.1.0` starten, Schema-Version im JSON separat
+- Versionierung: `0.1.0` starten, Schema-Version im JSON separat (aktuell App 0.3.0)
 
 ---
 

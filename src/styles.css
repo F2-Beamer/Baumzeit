@@ -61,6 +61,27 @@ html[data-theme="dark"] {
   --forest-ground-shadow: #1b211c;
 }
 
+/* Weihnachtszeit: verschneite Waldansicht (gilt für die SVG-Farben in forest.js) */
+.forest-scene.winter {
+  --forest-sky-a: #eaf3fc;
+  --forest-sky-b: #ccdff1;
+  --forest-hill-far: #dde9f3;
+  --forest-hill-near: #c9dae7;
+  --forest-ground-a: #f7fbfe;
+  --forest-ground-b: #dfeaf3;
+  --forest-ground-shadow: #a7bccb;
+}
+html[data-theme="dark"] .forest-scene.winter {
+  --forest-sky-a: #17222c;
+  --forest-sky-b: #131c25;
+  --forest-hill-far: #23303b;
+  --forest-hill-near: #2a3844;
+  --forest-ground-a: #b9c7d3;
+  --forest-ground-b: #94a5b4;
+  --forest-ground-shadow: #0e151c;
+}
+.forest-scene.winter .christmas-tree { filter: drop-shadow(0 6px 14px rgba(20, 40, 60, 0.18)); }
+
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; height: 100%; }
 body {

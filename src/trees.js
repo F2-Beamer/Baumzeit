@@ -1,5 +1,5 @@
-// Prozedurale Baum-SVGs für Baumzeit.
-// Alle Bäume nutzen dieselbe viewBox (0 0 100 140) mit Bodenlinie y = 132.
+﻿// Prozedurale Baum-SVGs fÃ¼r Baumzeit.
+// Alle BÃ¤ume nutzen dieselbe viewBox (0 0 100 140) mit Bodenlinie y = 132.
 
 export const SPECIES = {
   eiche:   { c: ['#4a7352', '#5d8a63', '#74a07a', '#8db392'], bark: '#7b5c45', kind: 'round', dark: '#3a5a43' },
@@ -29,7 +29,7 @@ export function mulberry32(seed) {
   };
 }
 
-export function treeSVG(speciesId, stage, seed, cls) {
+export function treeSVG(speciesId, stage, seed, cls, snow) {
   const pal = SPECIES[speciesId] || SPECIES.eiche;
   const rnd = mulberry32((Number(seed) || 1) * 7919 + 13);
   const base = 132;
@@ -46,6 +46,10 @@ export function treeSVG(speciesId, stage, seed, cls) {
       body += '<ellipse cx="' + l[0] + '" cy="' + l[1] + '" rx="7.5" ry="4.2" fill="' + pal.c[1] + '" transform="rotate(' + l[2] + ' ' + l[0] + ' ' + l[1] + ')"/>';
     });
     if (stage === 1) body += '<ellipse cx="50" cy="' + (base - 30) + '" rx="4.6" ry="7" fill="' + pal.c[2] + '"/>';
+    if (snow) {
+      body += '<ellipse cx="50" cy="' + (stage === 0 ? base - 8 : base - 36) + '" rx="5.2" ry="2" fill="#f6fbfe" opacity=".85"/>';
+      if (stage === 1) body += '<ellipse cx="42" cy="' + (base - 15) + '" rx="4" ry="1.6" fill="#f6fbfe" opacity=".8"/>';
+    }
   } else if (pal.kind === 'conifer') {
     const h = stage === 2 ? 34 : stage === 3 ? 48 : 62;
     body += '<path d="M48.6 ' + base + ' L49.6 ' + (base - h) + ' L50.4 ' + (base - h) + ' L51.4 ' + base + ' Z" fill="' + pal.bark + '"/>';
@@ -57,6 +61,11 @@ export function treeSVG(speciesId, stage, seed, cls) {
     layers.forEach(function (l, i) {
       body += '<path d="M' + (50 - l[2]) + ' ' + l[0] + ' Q50 ' + (l[0] + 6) + ' ' + (50 + l[2]) + ' ' + l[0] + ' L50 ' + l[1] + ' Z" fill="' + pal.c[Math.min(i, 3)] + '"/>';
     });
+    if (snow) {
+      layers.forEach(function (l) {
+        body += '<path d="M' + (50 - l[2]) + ' ' + l[0] + ' Q50 ' + (l[0] + 6) + ' ' + (50 + l[2]) + ' ' + l[0] + '" fill="none" stroke="#f6fbfe" stroke-width="' + (l[2] > 15 ? 2.6 : 2.2) + '" stroke-linecap="round" opacity=".9"/>';
+      });
+    }
   } else if (pal.kind === 'birch') {
     const h = stage === 2 ? 38 : stage === 3 ? 52 : 66;
     const top = base - h;
@@ -76,6 +85,11 @@ export function treeSVG(speciesId, stage, seed, cls) {
     blobs.forEach(function (b, i) {
       body += '<ellipse cx="' + b[0] + '" cy="' + b[1] + '" rx="' + b[2] + '" ry="' + (b[2] * 0.92).toFixed(1) + '" fill="' + pal.c[i % 4] + '"/>';
     });
+    if (snow) {
+      blobs.forEach(function (b) {
+        body += '<ellipse cx="' + b[0] + '" cy="' + (b[1] - b[2] * 0.58).toFixed(1) + '" rx="' + (b[2] * 0.68).toFixed(1) + '" ry="' + (b[2] * 0.24).toFixed(1) + '" fill="#f6fbfe" opacity=".72"/>';
+      });
+    }
   } else {
     const h = stage === 2 ? 36 : stage === 3 ? 50 : 64;
     const top = base - h;
@@ -97,6 +111,11 @@ export function treeSVG(speciesId, stage, seed, cls) {
       const jy = (rnd() - 0.5) * 2.2;
       body += '<ellipse cx="' + (b[0] + jx).toFixed(1) + '" cy="' + (b[1] + jy).toFixed(1) + '" rx="' + b[2].toFixed(1) + '" ry="' + (b[2] * 0.9).toFixed(1) + '" fill="' + pal.c[i % 4] + '"/>';
     });
+    if (snow) {
+      blobs.forEach(function (b) {
+        body += '<ellipse cx="' + b[0] + '" cy="' + (b[1] - b[2] * 0.6).toFixed(1) + '" rx="' + (b[2] * 0.7).toFixed(1) + '" ry="' + (b[2] * 0.24).toFixed(1) + '" fill="#f6fbfe" opacity=".72"/>';
+      });
+    }
     if (stage >= 3) {
       body += '<ellipse cx="44" cy="' + (top - 30) + '" rx="6" ry="5" fill="' + pal.c[3] + '" opacity=".7"/>';
       body += '<ellipse cx="58" cy="' + (top - 34) + '" rx="5" ry="4.5" fill="' + pal.c[3] + '" opacity=".6"/>';
@@ -106,7 +125,7 @@ export function treeSVG(speciesId, stage, seed, cls) {
   return '<svg class="' + (cls || '') + '" viewBox="0 0 100 140" aria-hidden="true">' + ground + body + '</svg>';
 }
 
-// Größe im Wald richtet sich nach der tatsächlichen Lernzeit.
+// GrÃ¶ÃŸe im Wald richtet sich nach der tatsÃ¤chlichen Lernzeit.
 export function stageForMinutes(minutes) {
   if (minutes >= 20) return 4;
   if (minutes >= 10) return 3;
