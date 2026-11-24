@@ -44,7 +44,7 @@ function treeHTML(species, stage, seed, height, cls = '') {
     .replace('<svg', `<svg style="height:${Math.round(height)}px;width:auto"`);
 }
 
-// Voll ausgewachsener Baum (50 Min) fÃ¼llt die VerlaufshÃ¶he; andere proportional.
+// Voll ausgewachsener Baum (50 Min) füllt die Verlaufshöhe; andere proportional.
 function historyTreeHeight(minutes) {
   const clamped = Math.max(1, Math.min(50, Number(minutes) || 1));
   return Math.round(28 + (clamped / 50) * 76);
@@ -67,7 +67,7 @@ function formatDurationDE(minutes) {
 
 function formatDateTimeDE(value) {
   const d = new Date(value);
-  if (!Number.isFinite(d.getTime())) return 'â€“';
+  if (!Number.isFinite(d.getTime())) return '–';
   const date = d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
   const time = d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
   return `${date}, ${time} Uhr`;
@@ -329,7 +329,7 @@ export class App {
       this.save();
       this.renderAll();
       this.broadcast();
-      this.showToast('Session beendet â€“ kein Baum gepflanzt.');
+      this.showToast('Session beendet – kein Baum gepflanzt.');
       return;
     }
 
@@ -350,17 +350,17 @@ export class App {
       const pomodoro = this.state.settings.mode === 'pomodoro' && a.mode === 'pomodoro';
       if (pomodoro && !restore) {
         this.startBreak(a.species, a.seed);
-        this.showToast(`Baum gepflanzt Â· ${formatMinutes(minutes)}. Pause startet.`, true);
-        this.notify('Baum gepflanzt', `${formatMinutes(minutes)} gelernt. Zeit fÃ¼r eine Pause.`);
+        this.showToast(`Baum gepflanzt · ${formatMinutes(minutes)}. Pause startet.`, true);
+        this.notify('Baum gepflanzt', `${formatMinutes(minutes)} gelernt. Zeit für eine Pause.`);
       } else {
-        this.showToast(`Baum gepflanzt Â· ${formatMinutes(minutes)}.`, true);
+        this.showToast(`Baum gepflanzt · ${formatMinutes(minutes)}.`, true);
         this.notify('Baum gepflanzt', `Du hast ${formatMinutes(minutes)} gelernt.`);
       }
     } else {
       this.state.active = null;
       this.confirmEnd = false;
-      this.showToast('Pause vorbei â€“ bereit fÃ¼r die nÃ¤chste Session.', true);
-      this.notify('Pause vorbei', 'Bereit fÃ¼r die nÃ¤chste Lern-Session.');
+      this.showToast('Pause vorbei – bereit für die nächste Session.', true);
+      this.notify('Pause vorbei', 'Bereit für die nächste Lern-Session.');
     }
 
     this.lastTreeKey = null;
@@ -460,11 +460,11 @@ export class App {
 
     let label;
     if (!a) {
-      label = s.mode === 'pomodoro' ? 'bereit Â· Pomodoro' : 'bereit Â· Freier Timer';
+      label = s.mode === 'pomodoro' ? 'bereit · Pomodoro' : 'bereit · Freier Timer';
     } else if (a.phase === 'break') {
-      label = a.pausedAt != null ? 'pausiert Â· Pause' : 'Pause';
+      label = a.pausedAt != null ? 'pausiert · Pause' : 'Pause';
     } else {
-      label = (a.pausedAt != null ? 'pausiert' : 'verbleibend') + (a.mode === 'pomodoro' ? ' Â· Fokus' : ' Â· Freie Session');
+      label = (a.pausedAt != null ? 'pausiert' : 'verbleibend') + (a.mode === 'pomodoro' ? ' · Fokus' : ' · Freie Session');
     }
     const labelEl = this.$('mainTimeLabel');
     if (labelEl) labelEl.textContent = label;
@@ -532,11 +532,11 @@ export class App {
     const note = this.$('modeNote');
     if (note) {
       if (a && a.phase === 'break') {
-        note.textContent = 'Pause lÃ¤uft Â· danach neue Session';
+        note.textContent = 'Pause läuft · danach neue Session';
       } else if (s.mode === 'pomodoro') {
-        note.textContent = `${s.workMinutes} Min lernen Â· ${s.breakMinutes} Min Pause`;
+        note.textContent = `${s.workMinutes} Min lernen · ${s.breakMinutes} Min Pause`;
       } else {
-        note.textContent = `Freier Timer Â· ${s.workMinutes} Min ohne Pause`;
+        note.textContent = `Freier Timer · ${s.workMinutes} Min ohne Pause`;
       }
     }
 
@@ -545,8 +545,8 @@ export class App {
 
     const hint = this.$('timerHint');
     if (hint) {
-      if (a && a.phase === 'break') hint.textContent = 'Pause lÃ¤uft â€“ neue Session danach per Klick';
-      else if (a) hint.textContent = 'Der Baum wÃ¤chst mit jeder Minute';
+      if (a && a.phase === 'break') hint.textContent = 'Pause läuft – neue Session danach per Klick';
+      else if (a) hint.textContent = 'Der Baum wächst mit jeder Minute';
       else if (s.mode === 'pomodoro') hint.textContent = 'Nach der Session startet die Pause automatisch';
       else hint.textContent = 'Am Ende wird der Baum direkt gepflanzt';
     }
@@ -583,7 +583,7 @@ export class App {
     if (!recent.length) {
       host.innerHTML = '<span class="empty">Noch kein Baum gepflanzt</span>';
       const label = this.$('recentLabel');
-      if (label) label.textContent = 'â€“';
+      if (label) label.textContent = '–';
       return;
     }
     host.innerHTML = recent.map((s) => (
@@ -601,7 +601,7 @@ export class App {
   renderWald() {
     const summary = this.$('waldSummary');
     const stats = computeStats(this.state.sessions);
-    if (summary) summary.textContent = `${formatHours(stats.totalMinutes)} Â· ${stats.totalTrees} ${stats.totalTrees === 1 ? 'Baum' : 'BÃ¤ume'}`;
+    if (summary) summary.textContent = `${formatHours(stats.totalMinutes)} · ${stats.totalTrees} ${stats.totalTrees === 1 ? 'Baum' : 'Bäume'}`;
 
     const host = this.$('waldDays');
     if (host) {
@@ -617,10 +617,10 @@ export class App {
         const days = groups.map((g) => {
           const heading = formatDayHeading(g.date);
           const dateText = formatDateShort(g.date);
-          const meta = `${formatMinutes(g.minutes)} Â· ${g.trees.length} ${g.trees.length === 1 ? 'Baum' : 'BÃ¤ume'}`;
+          const meta = `${formatMinutes(g.minutes)} · ${g.trees.length} ${g.trees.length === 1 ? 'Baum' : 'Bäume'}`;
           const trees = g.trees.map((t) => {
             const speciesName = SPECIES_LIST.find((sp) => sp.id === t.species)?.name || 'Baum';
-            const tip = `Wann: ${formatDateTimeDE(t.endedAt)}\nLernzeit: ${formatDurationDE(t.minutes)}\nBaum: ${speciesName} â€“ ${stageLabel(t.minutes)}`;
+            const tip = `Wann: ${formatDateTimeDE(t.endedAt)}\nLernzeit: ${formatDurationDE(t.minutes)}\nBaum: ${speciesName} – ${stageLabel(t.minutes)}`;
             return `<span class="slot" title="${escapeAttr(tip)}">${treeHTML(t.species, stageForMinutes(t.minutes), t.seed, historyTreeHeight(t.minutes))}</span>`;
           }).join('');
           return `<div class="day">
@@ -705,7 +705,7 @@ export class App {
       const totalMinutes = this.state.sessions.reduce((sum, x) => sum + x.minutes, 0);
       speciesSelect.innerHTML = SPECIES_LIST.map((sp) => {
         const unlocked = totalMinutes >= sp.need * 60;
-        return `<option value="${sp.id}"${unlocked ? '' : ' disabled'}>${sp.name}${unlocked ? '' : ` Â· ab ${sp.need} Std`}</option>`;
+        return `<option value="${sp.id}"${unlocked ? '' : ' disabled'}>${sp.name}${unlocked ? '' : ` · ab ${sp.need} Std`}</option>`;
       }).join('');
       speciesSelect.value = this.currentSpecies();
       speciesSelect.disabled = !!this.state.active;
@@ -723,7 +723,7 @@ export class App {
 
   setMode(mode) {
     if (this.state.active) {
-      this.showToast('Der Modus lÃ¤sst sich wÃ¤hrend einer Session nicht Ã¤ndern.');
+      this.showToast('Der Modus lässt sich während einer Session nicht ändern.');
       return;
     }
     this.state.settings.mode = mode === 'frei' ? 'frei' : 'pomodoro';
@@ -769,7 +769,7 @@ export class App {
 
   async applyAutostart(enabled) {
     if (!hasTauri) {
-      this.showToast('Autostart ist nur in der Desktop-App verfÃ¼gbar.');
+      this.showToast('Autostart ist nur in der Desktop-App verfügbar.');
       return;
     }
     try {
@@ -777,11 +777,11 @@ export class App {
       if (enabled) await mod.enable();
       else await mod.disable();
     } catch (err) {
-      console.error('Autostart konnte nicht geÃ¤ndert werden', err);
+      console.error('Autostart konnte nicht geändert werden', err);
       this.state.settings.autostart = !enabled;
       this.renderSettings();
       this.save();
-      this.showToast('Autostart konnte nicht geÃ¤ndert werden.');
+      this.showToast('Autostart konnte nicht geändert werden.');
     }
   }
 
@@ -799,7 +799,7 @@ export class App {
       try {
         const mod = await import('@tauri-apps/api/app');
         version = await mod.getVersion();
-      } catch { /* Build-Version als RÃ¼ckfall */ }
+      } catch { /* Build-Version als Rückfall */ }
     }
     if (!version) return;
     const label = `Version ${version}`;
@@ -811,7 +811,7 @@ export class App {
 
   async openMini() {
     if (!hasTauri) {
-      this.showToast('Der Mini-Modus ist nur in der Desktop-App verfÃ¼gbar.');
+      this.showToast('Der Mini-Modus ist nur in der Desktop-App verfügbar.');
       return;
     }
     await this.call('toggle_mini', { alwaysOnTop: this.state.settings.miniAlwaysOnTop });
@@ -820,7 +820,7 @@ export class App {
 
   async quitApp() {
     if (!hasTauri) {
-      this.showToast('Beenden ist nur in der Desktop-App verfÃ¼gbar.');
+      this.showToast('Beenden ist nur in der Desktop-App verfügbar.');
       return;
     }
     await this.call('quit_app');
@@ -871,7 +871,7 @@ export class App {
       .then(() => storage.saveState(snapshot))
       .catch((err) => {
         console.error('Speichern fehlgeschlagen', err);
-        this.showToast('Speichern fehlgeschlagen â€“ der Wald konnte nicht gesichert werden.');
+        this.showToast('Speichern fehlgeschlagen – der Wald konnte nicht gesichert werden.');
       });
   }
 
@@ -993,9 +993,9 @@ export class App {
       btn.addEventListener('click', async () => {
         try {
           const opened = await storage.openDataFolder();
-          this.showToast(opened ? 'Speicherordner geÃ¶ffnet.' : 'Speicherordner ist nur in der Desktop-App verfÃ¼gbar.');
+          this.showToast(opened ? 'Speicherordner geöffnet.' : 'Speicherordner ist nur in der Desktop-App verfügbar.');
         } catch {
-          this.showToast('Speicherordner konnte nicht geÃ¶ffnet werden.');
+          this.showToast('Speicherordner konnte nicht geöffnet werden.');
         }
       });
     });
@@ -1055,9 +1055,9 @@ export class App {
     const stage = a ? (a.phase === 'break' ? 4 : stageForProgress(progress)) : 3;
     const targetMin = Math.max(1, Math.round(target / 60000));
     let sub;
-    if (!a) sub = `Bereit Â· ${targetMin} Min`;
-    else if (a.phase === 'break') sub = a.pausedAt != null ? 'Pausiert Â· Pause' : `Pause Â· ${targetMin} Min`;
-    else sub = a.pausedAt != null ? 'Pausiert Â· Fokus' : `Fokus Â· ${targetMin} Min`;
+    if (!a) sub = `Bereit · ${targetMin} Min`;
+    else if (a.phase === 'break') sub = a.pausedAt != null ? 'Pausiert · Pause' : `Pause · ${targetMin} Min`;
+    else sub = a.pausedAt != null ? 'Pausiert · Fokus' : `Fokus · ${targetMin} Min`;
 
     emit('timer:snapshot', {
       source: 'main',

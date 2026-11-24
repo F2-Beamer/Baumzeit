@@ -1,5 +1,5 @@
-﻿// Prozedurale Baum-SVGs fÃ¼r Baumzeit.
-// Alle BÃ¤ume nutzen dieselbe viewBox (0 0 100 140) mit Bodenlinie y = 132.
+﻿// Prozedurale Baum-SVGs für Baumzeit.
+// Alle Bäume nutzen dieselbe viewBox (0 0 100 140) mit Bodenlinie y = 132.
 
 export const SPECIES = {
   eiche:   { c: ['#4a7352', '#5d8a63', '#74a07a', '#8db392'], bark: '#7b5c45', kind: 'round', dark: '#3a5a43' },
@@ -125,7 +125,7 @@ export function treeSVG(speciesId, stage, seed, cls, snow) {
   return '<svg class="' + (cls || '') + '" viewBox="0 0 100 140" aria-hidden="true">' + ground + body + '</svg>';
 }
 
-// GrÃ¶ÃŸe im Wald richtet sich nach der tatsÃ¤chlichen Lernzeit.
+// GröÃŸe im Wald richtet sich nach der tatsächlichen Lernzeit.
 export function stageForMinutes(minutes) {
   if (minutes >= 20) return 4;
   if (minutes >= 10) return 3;
