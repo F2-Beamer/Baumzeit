@@ -1,7 +1,9 @@
 use std::fs;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::time::SystemTime;
 
+use chrono::Local;
 use tauri::menu::{Menu, MenuItem, PredefinedMenuItem};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
 use tauri::{Emitter, Manager, WindowEvent};
@@ -23,15 +25,134 @@ fn state_file() -> PathBuf {
     data_dir().join("wald.json")
 }
 
+// ---------- Backups ----------
+// Vor jedem Schreiben wird der bisherige Stand gesichert. Es wird höchstens
+// einmal pro Stunde ein Backup angelegt, damit die sieben Stände nicht alle
+// aus derselben Minute stammen. Immer die letzten BACKUP_KEEP bleiben erhalten.
+
+/// Anzahl der aufbewahrten Backups von wald.json.
+const BACKUP_KEEP: usize = 7;
+/// Mindestabstand zwischen zwei automatischen Backups in Sekunden.
+const BACKUP_MIN_INTERVAL_SECS: u64 = 60 * 60;
+const BACKUP_PREFIX: &str = "wald-";
+const BACKUP_SUFFIX: &str = ".json";
+
+fn backups_dir() -> PathBuf {
+    data_dir().join("backups")
+}
+
+fn is_backup_file(path: &Path) -> bool {
+    path.is_file()
+        && path
+            .file_name()
+            .and_then(|name| name.to_str())
+            .map(|name| name.starts_with(BACKUP_PREFIX) && name.ends_with(BACKUP_SUFFIX))
+            .unwrap_or(false)
+}
+
+/// Alle Backups, aufsteigend nach dem Zeitstempel im Dateinamen.
+fn backup_files() -> Vec<PathBuf> {
+    let Ok(entries) = fs::read_dir(backups_dir()) else {
+        return Vec::new();
+    };
+    let mut files: Vec<PathBuf> = entries
+        .filter_map(|entry| entry.ok())
+        .map(|entry| entry.path())
+        .filter(|path| is_backup_file(path))
+        .collect();
+    files.sort();
+    files
+}
+
+fn newest_backup_age_secs() -> Option<u64> {
+    let newest = backup_files().pop()?;
+    let modified = fs::metadata(&newest).ok()?.modified().ok()?;
+    SystemTime::now()
+        .duration_since(modified)
+        .ok()
+        .map(|age| age.as_secs())
+}
+
+/// Entfernt die ältesten Backups, sodass nur die letzten BACKUP_KEEP übrig bleiben.
+fn prune_backups() {
+    let files = backup_files();
+    if files.len() <= BACKUP_KEEP {
+        return;
+    }
+    for old in &files[..files.len() - BACKUP_KEEP] {
+        let _ = fs::remove_file(old);
+    }
+}
+
+/// Sichert den bisherigen Stand, bevor wald.json ersetzt wird.
+fn backup_before_save(source: &Path) {
+    if !source.exists() {
+        return;
+    }
+    if let Some(age) = newest_backup_age_secs() {
+        if age < BACKUP_MIN_INTERVAL_SECS {
+            return;
+        }
+    }
+    let Ok(current) = fs::read_to_string(source) else {
+        return;
+    };
+    // Beschädigte Stände nicht in die Backup-Kette aufnehmen.
+    if !is_valid_state(&current) {
+        return;
+    }
+    let dir = backups_dir();
+    if fs::create_dir_all(&dir).is_err() {
+        return;
+    }
+    let stamp = Local::now().format("%Y-%m-%d_%H-%M-%S");
+    let dest = dir.join(format!("{BACKUP_PREFIX}{stamp}{BACKUP_SUFFIX}"));
+    if fs::write(&dest, current.as_bytes()).is_err() {
+        return;
+    }
+    prune_backups();
+}
+
+fn is_valid_state(raw: &str) -> bool {
+    serde_json::from_str::<serde_json::Value>(raw)
+        .map(|value| value.is_object())
+        .unwrap_or(false)
+}
+
+/// Schreibt den Zustand atomar über eine temporäre Datei.
+fn write_state_file(raw: &str) -> Result<(), String> {
+    let dir = data_dir();
+    fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+    let tmp = dir.join("wald.json.tmp");
+    fs::write(&tmp, raw.as_bytes()).map_err(|e| e.to_string())?;
+    fs::rename(&tmp, state_file()).map_err(|e| e.to_string())?;
+    Ok(())
+}
+
 #[tauri::command]
 fn load_state() -> Result<Option<String>, String> {
     let path = state_file();
-    if !path.exists() {
-        return Ok(None);
+    if path.exists() {
+        match fs::read_to_string(&path) {
+            Ok(raw) if is_valid_state(&raw) => return Ok(Some(raw)),
+            Ok(_) => eprintln!("wald.json ist beschädigt – prüfe Backups"),
+            Err(err) => eprintln!("wald.json konnte nicht gelesen werden: {err}"),
+        }
     }
-    fs::read_to_string(&path)
-        .map(Some)
-        .map_err(|e| e.to_string())
+    // Datei fehlt oder ist unbrauchbar: neuestes gültiges Backup wiederherstellen.
+    for backup in backup_files().iter().rev() {
+        let Ok(raw) = fs::read_to_string(backup) else {
+            continue;
+        };
+        if !is_valid_state(&raw) {
+            continue;
+        }
+        if let Err(err) = write_state_file(&raw) {
+            eprintln!("Backup konnte nicht wiederhergestellt werden: {err}");
+        }
+        return Ok(Some(raw));
+    }
+    Ok(None)
 }
 
 const MAX_STATE_BYTES: usize = 2 * 1024 * 1024;
@@ -79,9 +200,7 @@ fn save_state(state: String) -> Result<(), String> {
     let tmp = dir.join("wald.json.tmp");
 
     fs::write(&tmp, state.as_bytes()).map_err(|e| e.to_string())?;
-    if path.exists() {
-        let _ = fs::copy(&path, dir.join("wald.json.bak"));
-    }
+    backup_before_save(&path);
     fs::rename(&tmp, &path).map_err(|e| e.to_string())?;
     Ok(())
 }

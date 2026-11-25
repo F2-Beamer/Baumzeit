@@ -1,8 +1,28 @@
 # Release Notes – Baumzeit
 
+## v0.3.3 (25.11.2026) – Automatische Backups
+
+### Neu
+- **Automatische Backups:** Vor jedem Schreiben wird der bisherige Stand von `wald.json` gesichert – ohne Zutun, ohne Cloud.
+- **Immer die letzten 7:** Es werden maximal 7 Backups aufbewahrt; ältere werden automatisch entfernt.
+- **Sinnvoller Abstand:** Höchstens ein Backup pro Stunde. Bei täglicher Nutzung ergibt das rund 7 Tage Historie, bei intensiver Nutzung die letzten 7 Stunden.
+- **Automatische Rettung:** Fehlt `wald.json` oder ist sie beschädigt, wird beim Start das neueste gültige Backup geladen und zurückgeschrieben.
+
+### Dokumentation
+- Neues Dokument `BACKUP-KONZEPT.md` mit Ablauf, Rotation, manueller Wiederherstellung und Grenzen.
+- Der Hilfe-Tab erklärt Speicherort und automatische Sicherung.
+- README beschreibt Backup-Ordner und Wiederherstellung.
+
+### Hinweis
+- Backups liegen unter `%APPDATA%\Baumzeit\backups\` auf derselben Festplatte und schützen nicht vor einem Hardwaredefekt. Für eine externe Sicherung den Ordner `%APPDATA%\Baumzeit\` mitsichern.
+
+### Artefakte
+- Installer: `Baumzeit_0.3.3_x64-setup.exe`
+- Portable: `Baumzeit-portable-0.3.3.exe`
+
 ## v0.3.2 (24.11.2026) – 60-Minuten-Baum und Blumenwiese
 
-- **Baumwachstum angepasst:** Ein Baum ist jetzt nach 60 Minuten voll ausgewachsen (Stufen bei 15/30/45/60 Minuten).
+- **Baumwachstum angepasst:** Ein Baum ist jetzt nach 60 Minuten voll ausgewachsen (Stufen bei 15/30/60 Minuten).
 - **Blumenwiese:** Nach dem ausgewachsenen Baum wächst bis 120 Minuten eine Blumenwiese in 4 Stufen um den Baum (75/90/105/120 Minuten).
 - **Hilfe:** Die Wachstumsstufen für Baum und Blumenwiese sind im Hilfe-Tab übersichtlich beschrieben.
 - **Hinweis:** Bestehende Sessions werden beim Laden neu eingestuft; dadurch können frühere Bäume je nach Lernzeit eine andere Wachstumsstufe anzeigen.

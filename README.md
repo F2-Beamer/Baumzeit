@@ -53,13 +53,16 @@ npm run tauri build
 
 Artefakte:
 
-- Installer: `src-tauri/target/release/bundle/nsis/Baumzeit_0.3.2_x64-setup.exe`
+- Installer: `src-tauri/target/release/bundle/nsis/Baumzeit_0.3.3_x64-setup.exe`
 - Portable: `src-tauri/target/release/baumzeit.exe`
 
 ## Daten
 
 - Speicherort: `%APPDATA%\Baumzeit\wald.json`
-- Beim Schreiben wird zuerst `wald.json.bak` angelegt, dann atomar über eine temporäre Datei ersetzt.
+- Beim Schreiben wird der Zustand atomar über eine temporäre Datei ersetzt.
+- Automatische Backups liegen in `%APPDATA%\Baumzeit\backups\` als `wald-<Datum>_<Uhrzeit>.json`.
+- Es wird höchstens einmal pro Stunde ein Backup angelegt; die letzten **7** Backups bleiben erhalten.
+- Ist `wald.json` beim Start fehlend oder beschädigt, wird automatisch das neueste gültige Backup geladen und zurückgeschrieben.
 - Schema-Version im JSON: `1`
 - Es gibt kein Konto, keine Cloud und keine Telemetrie.
 
