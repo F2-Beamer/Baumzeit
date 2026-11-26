@@ -1,7 +1,7 @@
 // Prüfskript für die reine Logik (läuft ohne Tauri und ohne DOM).
 import assert from 'node:assert/strict';
 import {
-  computeStats, groupSessionsByDay, formatMinutes, formatHours,
+  computeStats, computeStreak, groupSessionsByDay, formatMinutes, formatHours,
   dayKey, formatDayHeading
 } from '../src/stats.js';
 import {
@@ -9,7 +9,7 @@ import {
 } from '../src/trees.js';
 import { normalizeState } from '../src/app.js';
 import { christmasState, christmasTreeSVG, ornamentSlots, ORNAMENT_SLOTS } from '../src/christmas.js';
-import { forestSceneHTML, WINTER_PALETTE } from '../src/forest.js';
+import { forestSceneHTML, WINTER_PALETTE, birdCountForStreak } from '../src/forest.js';
 
 const now = new Date(2026, 10, 22, 12, 0, 0); // So 22. Nov 2026
 const at = (daysAgo, hour = 10) => {
@@ -53,6 +53,48 @@ assert.equal(formatDayHeading(now, now), 'Heute');
 
 // Wochensumme: Montag der aktuellen Woche (16.11.) bis heute
 assert.equal(stats.weekMinutes, 105, 'Alle Sessions liegen in dieser Woche');
+assert.equal(stats.learnedToday, true, 'Heute wurde gelernt');
+assert.equal(stats.last7LearningDays, 3, 'Drei Lerntage in den letzten 7 Tagen');
+assert.equal(stats.streakAtRisk, false, 'Mit Session heute kein Risiko');
+
+// --- Streak mit 5-von-7-Toleranz ---
+const range = (from, to) => Array.from({ length: to - from + 1 }, (_, i) => from + i);
+const dayMap = (offsets) => {
+  const map = new Map();
+  for (const off of offsets) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - off);
+    map.set(dayKey(d), 25);
+  }
+  return map;
+};
+const sessionsOn = (offsets, minutes = 25) => offsets.map((off) => session(off, minutes));
+
+assert.equal(computeStreak(dayMap([0, 1]), now), 2, 'Streak heute + gestern');
+assert.equal(computeStreak(dayMap([0, 3, 4, 5, 6, 7]), now), 6, '5 Lerntage + 2 Pausen + heute');
+assert.equal(computeStreak(dayMap([4, 5, 6, 7, 8]), now), 0, '5 Lerntage + 3 Pausen (danach)');
+assert.equal(computeStreak(dayMap(range(3, 12)), now), 10, '10 Lerntage + 2 Pausen, heute offen');
+assert.equal(computeStreak(dayMap(range(4, 13)), now), 0, '10 Lerntage + 3 Pausen (danach)');
+assert.equal(computeStreak(dayMap([2, 3, 4]), now), 0, '3 Lerntage + 1 Pause');
+assert.equal(computeStreak(dayMap(range(1, 20)), now), 20, 'Lückenlose alte Serie bleibt');
+
+const restAvailable = computeStats(sessionsOn([1, 2, 3, 4, 5]), now);
+assert.equal(restAvailable.streak, 5, 'Fünf Lerntage ohne heute');
+assert.equal(restAvailable.restDayAvailable, true, 'Heute ist ein freier Pausentag');
+assert.equal(restAvailable.streakAtRisk, false, 'Freier Pausentag: kein Risiko');
+
+const atRisk = computeStats(sessionsOn([1, 2, 3, 5]), now);
+assert.equal(atRisk.restDayAvailable, false, 'Zu wenige Lerntage für einen Pausentag');
+assert.equal(atRisk.streakAtRisk, true, 'Ohne Lernen heute bricht der Streak');
+
+const noStreak = computeStats([], now);
+assert.equal(noStreak.streakAtRisk, false, 'Ohne Streak kein Hinweis');
+assert.equal(noStreak.restDayAvailable, false);
+
+const learned = computeStats(sessionsOn([0, 1]), now);
+assert.equal(learned.learnedToday, true);
+assert.equal(learned.restDayAvailable, false, 'Nach dem Lernen ist heute kein Pausentag mehr');
+assert.equal(learned.streakAtRisk, false);
 
 const grouped = groupSessionsByDay(sessions, 30);
 assert.equal(grouped.length, 3, 'Drei Tagesgruppen');
@@ -200,5 +242,34 @@ assert.ok(!sceneOff.includes('winter'), 'Ausgeschaltet: kein Winter');
 const sceneOn = forestSceneHTML([session(0, 25)], { date: new Date(2026, 11, 24) });
 assert.ok(sceneOn.includes('christmas-tree'), 'Dezember: Christbaum im Wald');
 assert.ok(sceneOn.includes('Weihnachtsbaum · 24. Dezember'), 'Tooltip nennt Datum und Deko');
+
+// --- Vogel-Bonus ---
+assert.equal(birdCountForStreak(0), 0, 'Kein Streak: keine Vögel');
+assert.equal(birdCountForStreak(9), 0, 'Unter 10: keine Vögel');
+assert.equal(birdCountForStreak(10), 3, 'Ab 10: drei Vögel');
+assert.equal(birdCountForStreak(19), 3);
+assert.equal(birdCountForStreak(20), 4, 'Ab 20: vier Vögel');
+assert.equal(birdCountForStreak(29), 4);
+assert.equal(birdCountForStreak(30), 5, 'Ab 30: fünf Vögel');
+assert.equal(birdCountForStreak(100), 5);
+assert.equal(birdCountForStreak(undefined), 0, 'Ohne Streak keine Vögel');
+
+const birdsFor = (scene) => (scene.match(/class="bz-bird"/g) || []).length;
+const sceneNoBirds = forestSceneHTML([session(0, 25)], { date: new Date(2026, 10, 24), streak: 9 });
+assert.equal(birdsFor(sceneNoBirds), 0, 'Streak 9: keine Vögel');
+const sceneBirds3 = forestSceneHTML([session(0, 25)], { date: new Date(2026, 10, 24), streak: 10 });
+assert.equal(birdsFor(sceneBirds3), 3, 'Streak 10: drei Vögel');
+assert.ok(sceneBirds3.includes('bz-bird-flock'), 'Vogelschwarm ist enthalten');
+const sceneBirds4 = forestSceneHTML([session(0, 25)], { date: new Date(2026, 10, 24), streak: 20 });
+assert.equal(birdsFor(sceneBirds4), 4, 'Streak 20: vier Vögel');
+const sceneBirds5 = forestSceneHTML([session(0, 25)], { date: new Date(2026, 10, 24), streak: 30 });
+assert.equal(birdsFor(sceneBirds5), 5, 'Streak 30: fünf Vögel');
+const sceneWithoutStreak = forestSceneHTML([session(0, 25)], { date: new Date(2026, 10, 24) });
+assert.equal(birdsFor(sceneWithoutStreak), 0, 'Ohne Streak-Option keine Vögel');
+const winterBirds = forestSceneHTML([session(0, 25)], {
+  date: new Date(2026, 11, 24), palette: WINTER_PALETTE, streak: 10
+});
+assert.equal(birdsFor(winterBirds), 3, 'Winter: Vögel sichtbar');
+assert.ok(winterBirds.includes('christmas-tree'), 'Winter: Christbaum bleibt erhalten');
 
 console.log('Alle Logikprüfungen bestanden.');

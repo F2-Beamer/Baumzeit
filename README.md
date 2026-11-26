@@ -4,11 +4,13 @@ Ruhiger Fokus-Timer für Windows 11: Während des Lernens wächst ein Baum live 
 
 ## Funktionen
 
-- **Pomodoro oder freier Timer** – Lernzeit und Pause frei einstellbar (1–180 / 1–60 Min)
+- **Pomodoro oder freier Timer** – Lernzeit und Pause frei einstellbar (1–180 / 1–60 Min); die Lernzeit lässt sich auch direkt auf der Timer-Seite ändern
 - **Live-Wachstum** in vier Stufen, Pause/Weiter ohne Zeitdrift
-- **Wald** mit Tagesgruppen, Baumgröße nach tatsächlicher Lernzeit
+- **Wald** mit Verlauf der letzten 4 Lerntage, Baumgröße nach tatsächlicher Lernzeit
 - **6 Baumarten**, freigeschaltet über Gesamtstunden (Eiche, Birke, Tanne, Ahorn, Kirsche, Ulme)
 - **Statistik**: Heute, Woche, Gesamt, Streak und 7-Tage-Balkendiagramm
+- **Streak mit Pausentagen**: Lerntage zählen; mindestens 5 in 7 Tagen halten den Streak
+- **Vogel-Bonus**: ab 10 Lerntagen fliegen 3 Vögel durch den Wald, ab 20 vier, ab 30 fünf
 - **Hell/Dunkel/System**, sanfter Klangschalen-Ton am Sessionende
 - **Waldansicht** als großes Wald-Bild mit allen Bäumen, plus Tagesverlauf
 - **Weihnachtszeit** (1.–26. Dezember): Christbaum rechts neben dem Wald, täglich abwechselnd Kerze und Kugel, Stern ab dem 24., Winterlook mit Schnee – per Schalter in den Einstellungen
@@ -26,6 +28,12 @@ Ruhiger Fokus-Timer für Windows 11: Während des Lernens wächst ein Baum live 
 | Hauptfenster öffnen | Klick auf das Mini-Fenster, Tray-Icon oder Tray-Menü |
 | Beenden | Tray-Menü „Beenden“ (Schließen legt nur in den Tray) |
 | Vorzeitiges Beenden | „Session beenden“ zweimal klicken (Sicherheitsabfrage) |
+
+## Streak
+
+Der Streak zählt **Lerntage**, nicht Kalendertage. Ein Tag mit mindestens einer abgeschlossenen Session zählt einmal. Pausentage erhöhen die Zahl nicht und brechen den Streak nur, wenn in den 7 Tagen bis einschließlich des Pausentags weniger als 5 Lerntage liegen. So sind bis zu 2 Pausentage in Folge möglich; vor den ersten 5 Lerntagen gibt es noch keine Toleranz. Heute bleibt offen, bis der Tag vorbei ist.
+
+Ab 10 Lerntagen erscheinen 3 Vögel in der Wald-Ansicht, ab 20 Lerntagen 4 und ab 30 Lerntagen 5. Fällt der Streak unter 10, verschwinden sie wieder.
 
 ## Entwicklung
 
@@ -53,7 +61,7 @@ npm run tauri build
 
 Artefakte:
 
-- Installer: `src-tauri/target/release/bundle/nsis/Baumzeit_0.3.3_x64-setup.exe`
+- Installer: `src-tauri/target/release/bundle/nsis/Baumzeit_0.4.0_x64-setup.exe`
 - Portable: `src-tauri/target/release/baumzeit.exe`
 
 ## Daten

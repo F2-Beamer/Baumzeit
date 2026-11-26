@@ -21,7 +21,8 @@ export const VAR_PALETTE = {
   hillNear: 'var(--forest-hill-near)',
   groundA: 'var(--forest-ground-a)',
   groundB: 'var(--forest-ground-b)',
-  groundShadow: 'var(--forest-ground-shadow)'
+  groundShadow: 'var(--forest-ground-shadow)',
+  bird: 'var(--forest-bird, #33413a)'
 };
 
 // Feste Winterfarben für eigenständige Vorschau-Dateien (ohne CSS-Kontext).
@@ -32,8 +33,56 @@ export const WINTER_PALETTE = {
   hillNear: '#c9dae7',
   groundA: '#f7fbfe',
   groundB: '#dfeaf3',
-  groundShadow: '#a7bccb'
+  groundShadow: '#a7bccb',
+  bird: '#3a4a52'
 };
+
+// Vogel-Bonus: 3 Vögel ab 10 Lerntagen, 4 ab 20, 5 ab 30.
+export function birdCountForStreak(streak) {
+  const n = Number(streak);
+  if (!Number.isFinite(n) || n < 10) return 0;
+  if (n >= 30) return 5;
+  if (n >= 20) return 4;
+  return 3;
+}
+
+// Feste Formation, damit die Szene bei jedem Rendern gleich aussieht.
+const BIRD_LAYOUT = [
+  { x: 0, y: 0, scale: 0.80 },
+  { x: 27, y: -16, scale: 0.66 },
+  { x: 51, y: 7, scale: 0.54 },
+  { x: 74, y: -9, scale: 0.60 },
+  { x: 97, y: -24, scale: 0.50 }
+];
+
+function birdSVG(x, y, scale, color, index) {
+  const delay = (-index * 0.15).toFixed(2);
+  return '<g class="bz-bird" transform="translate(' + x + ' ' + y + ') scale(' + scale + ')">'
+    + '<g transform="translate(1 -4)">'
+    + '<g class="bz-wing bz-wing-far" style="animation-delay:' + delay + 's">'
+    + '<path d="M0 0 C-5 -6 -10 -11 -14 -16 C-7 -14 -2 -9 0 -3 Z" fill="' + color + '" opacity=".55"/>'
+    + '</g>'
+    + '</g>'
+    + '<path d="M-11 -1 L-20 -5 L-18 0 L-21 4 L-11 3 Z" fill="' + color + '"/>'
+    + '<path d="M-12 0 C-9 -5 -2 -6 4 -4 C8 -3 10 -1 10 1 C10 4 5 6 0 6 C-6 5 -10 3 -12 0 Z" fill="' + color + '"/>'
+    + '<circle cx="9" cy="-3" r="3.6" fill="' + color + '"/>'
+    + '<path d="M12.2 -4 L18 -2 L12.2 0 Z" fill="#c08a4c"/>'
+    + '<circle cx="10.6" cy="-4.2" r=".75" fill="#eef5ea"/>'
+    + '<g transform="translate(1 -4)">'
+    + '<g class="bz-wing bz-wing-near" style="animation-delay:' + delay + 's">'
+    + '<path d="M0 0 C3 -9 9 -14 15 -14 C13 -7 8 -2 1 0 Z" fill="' + color + '"/>'
+    + '</g>'
+    + '</g>'
+    + '</g>';
+}
+
+function birdFlockHTML(vbX, vbY, vbW, vbH, count, color) {
+  const layout = BIRD_LAYOUT.slice(0, count);
+  const birds = layout.map((b, i) => birdSVG(b.x, b.y, b.scale, color, i)).join('');
+  return '<g transform="translate(0 ' + (vbY + vbH * 0.16).toFixed(1) + ')">'
+    + '<g class="bz-bird-flock">' + birds + '</g>'
+    + '</g>';
+}
 
 function flakeField(vbX, vbY, vbW) {
   const rnd = mulberry32(20261224);
@@ -54,13 +103,14 @@ function flakeField(vbX, vbY, vbW) {
 /**
  * Wald-Szene.
  * @param {Array} sessions gepflanzte Sessions
- * @param {{date?: Date|number|string, christmas?: boolean, palette?: object}} options
+ * @param {{date?: Date|number|string, christmas?: boolean, palette?: object, streak?: number}} options
  */
 export function forestSceneHTML(sessions, options = {}) {
   const date = options.date === undefined ? new Date() : new Date(options.date);
   const xmas = options.christmas === false ? null : christmasState(date);
   const winter = !!(xmas && xmas.active);
   const palette = options.palette || VAR_PALETTE;
+  const birdCount = birdCountForStreak(options.streak);
 
   const trees = (sessions || []).filter((s) => s && Number(s.minutes) > 0);
   if (!trees.length && !winter) {
@@ -273,18 +323,37 @@ export function forestSceneHTML(sessions, options = {}) {
       + '</g>'
     : '';
 
+  const birds = birdCount ? birdFlockHTML(vbX, vbY, vbW, vbH, birdCount, palette.bird || '#33413a') : '';
+  const birdFlyFrom = Math.round(vbX - 80);
+  const birdFlyTo = Math.round(vbX + vbW + 80);
+  const birdStill = Math.round(vbX + vbW * 0.28);
+  const birdLabel = birdCount ? ` und ${birdCount} Vögeln` : '';
   const label = winter
-    ? `Verschneiter Wald mit ${n} Bäumen und Weihnachtsbaum`
-    : `Wald mit ${n} Bäumen`;
+    ? `Verschneiter Wald mit ${n} Bäumen${birdLabel} und Weihnachtsbaum`
+    : `Wald mit ${n} Bäumen${birdLabel}`;
 
   const scene = `<div class="forest-scene${winter ? ' winter' : ''}" role="img" aria-label="${esc(label)}">
     <svg viewBox="${vbX} ${vbY} ${vbW} ${vbH}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <style>
         .bz-flake{animation-name:bzFall;animation-timing-function:linear;animation-iteration-count:infinite}
         @keyframes bzFall{0%{transform:translateY(-40px);opacity:0}12%{opacity:.9}88%{opacity:.9}100%{transform:translateY(360px);opacity:0}}
-        @media (prefers-reduced-motion: reduce){.bz-flake{animation:none;opacity:.5}}
+        .bz-bird-flock{animation:bzBirdsFly 34s linear infinite;animation-delay:-8s;opacity:0}
+        @keyframes bzBirdsFly{0%{transform:translateX(${birdFlyFrom}px);opacity:0}8%{opacity:.82}88%{opacity:.82}100%{transform:translateX(${birdFlyTo}px);opacity:0}}
+        .bz-wing{transform-box:fill-box}
+        .bz-wing-near{transform-origin:0% 100%;animation:bzWingNear .68s ease-in-out infinite}
+        .bz-wing-far{transform-origin:100% 100%;animation:bzWingFar .68s ease-in-out infinite}
+        @keyframes bzWingNear{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(38deg)}}
+        @keyframes bzWingFar{0%,100%{transform:rotate(38deg)}50%{transform:rotate(-10deg)}}
+        @media (prefers-reduced-motion: reduce){
+          .bz-flake{animation:none;opacity:.5}
+          .bz-bird-flock{animation:none;opacity:.82;transform:translateX(${birdStill}px)}
+          .bz-wing-near,.bz-wing-far{animation:none}
+          .bz-wing-near{transform:rotate(16deg)}
+          .bz-wing-far{transform:rotate(18deg)}
+        }
       </style>
       ${hills}
+      ${birds}
       ${treeGroups}
       ${xmasTree}
       ${winter ? flakeField(vbX, vbY, vbW) : ''}

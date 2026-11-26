@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Baumzeit – Wald mit drei Vögeln</title>
+  <style>
+    :root { color-scheme: light; }
+    body { margin: 0; font-family: "Segoe UI", system-ui, sans-serif; background: #f4f1eb; color: #2f3a2f; }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 32px 20px 48px; }
+    h1 { margin: 0 0 8px; font-size: 28px; font-weight: 600; }
+    p.lead { margin: 0 0 24px; color: #5d685c; max-width: 760px; line-height: 1.55; }
+    .preview { background: #fffdf8; border: 1px solid #ddd6ca; border-radius: 18px; padding: 18px; box-shadow: 0 8px 24px rgba(46,56,48,.06); }
+    .preview img { display: block; width: 100%; height: auto; border-radius: 12px; }
+    .legend { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 16px; font-size: 13px; color: #5d685c; }
+    .legend b { color: #2f3a2f; font-weight: 600; }
+    .note { margin-top: 24px; padding: 14px 16px; background: #edf4e8; border: 1px solid #cfe0c7; border-radius: 12px; color: #465646; font-size: 14px; line-height: 1.55; }
+    code { font-family: "Cascadia Mono", Consolas, monospace; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Wald mit drei Vögeln</h1>
+    <p class="lead">
+      Beispiel für den geplanten Streak-Bonus: Ab 10 Lerntagen fliegen drei dezente Vögel durch die
+      Wald-Ansicht. Die Szene stammt aus <code>src/forest.js</code>; die Vögel sind hier als
+      Design-Vorschau ergänzt und noch nicht in der App implementiert.
+    </p>
+
+    <div class="preview">
+      <img src="preview/wald-mit-3-voegeln.svg" alt="Wald mit drei Vögeln am Himmel">
+    </div>
+
+    <div class="legend">
+      <span><b>Streak 10–19</b> · 3 Vögel</span>
+      <span><b>Streak 20–29</b> · 4 Vögel</span>
+      <span><b>Ab Streak 30</b> · 5 Vögel</span>
+    </div>
+
+    <p class="note">
+      Die Vögel sind in Seitenansicht gezeichnet und schlagen mit den Flügeln, während der Schwarm
+      langsam von links nach rechts über den Wald zieht. Bei aktivierter
+      <code>prefers-reduced-motion</code>-Einstellung bleiben sie statisch im Bild.
+      Sichtbar sind sie nur in der Wald-Ansicht – nicht auf der Timer-Seite und nicht im Mini-Fenster.
+    </p>
+  </div>
+</body>
+</html>

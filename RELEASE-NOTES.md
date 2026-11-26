@@ -1,5 +1,26 @@
 # Release Notes – Baumzeit
 
+## v0.4.0 (25.11.2026) – Streak-Toleranz, Lernzeit am Timer und Vögel
+
+### Neu
+- **Streak mit Pausentagen:** Der Streak zählt Lerntage. Mindestens 5 Lerntage in einem rollierenden 7-Tage-Fenster halten ihn am Leben – so sind bis zu 2 Pausentage möglich.
+- **Vogel-Bonus:** Ab 10 Lerntagen fliegen 3 Vögel durch die Wald-Ansicht, ab 20 Lerntagen 4 und ab 30 Lerntagen 5. Fällt der Streak unter 10, verschwinden sie wieder.
+- **Lernzeit auf der Timer-Seite:** Zahlenfeld mit −/+ direkt unter der Baumart. Änderungen gelten für die nächste Session.
+
+### Geändert
+- **Statistik:** Der Streak wird als „X Lerntage“ angezeigt; darunter steht, wie viele Lerntage die letzten 7 Tage haben und ob der Streak sicher ist, ein Pausentag möglich ist oder heute gelernt werden sollte.
+- **Timer:** Ein dezenter Hinweis erscheint nur, wenn der Streak ohne Session heute brechen würde.
+- **Wald-Verlauf:** Zeigt nur noch die letzten 4 Lerntage als kompakte Karten; die Tage stehen nebeneinander statt jeweils über die volle Breite.
+- **Hilfe und README:** 5-von-7-Regel, Timer-Lernzeit und Vogel-Stufen dokumentiert.
+
+### Hinweis
+- Die Vogel-Animation respektiert `prefers-reduced-motion`; bei aktivierter Einstellung bleiben die Vögel statisch.
+- Keine Schema-Änderung: Der Streak wird weiterhin aus den Sessions berechnet.
+
+### Artefakte
+- Installer: `Baumzeit_0.4.0_x64-setup.exe`
+- Portable: `Baumzeit-portable-0.4.0.exe`
+
 ## v0.3.3 (25.11.2026) – Automatische Backups
 
 ### Neu

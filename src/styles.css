@@ -30,6 +30,7 @@
   --forest-ground-a: #c9b999;
   --forest-ground-b: #b9a784;
   --forest-ground-shadow: #5a6b52;
+  --forest-bird: #33413a;
 }
 html[data-theme="dark"] {
   --bg-grad-a: #1e2420;
@@ -59,6 +60,7 @@ html[data-theme="dark"] {
   --forest-ground-a: #4b4336;
   --forest-ground-b: #3f382e;
   --forest-ground-shadow: #1b211c;
+  --forest-bird: #a9c0ae;
 }
 
 /* Weihnachtszeit: verschneite Waldansicht (gilt für die SVG-Farben in forest.js) */
@@ -70,6 +72,7 @@ html[data-theme="dark"] {
   --forest-ground-a: #f7fbfe;
   --forest-ground-b: #dfeaf3;
   --forest-ground-shadow: #a7bccb;
+  --forest-bird: #3a4a52;
 }
 html[data-theme="dark"] .forest-scene.winter {
   --forest-sky-a: #17222c;
@@ -79,6 +82,7 @@ html[data-theme="dark"] .forest-scene.winter {
   --forest-ground-a: #b9c7d3;
   --forest-ground-b: #94a5b4;
   --forest-ground-shadow: #0e151c;
+  --forest-bird: #a9c2cf;
 }
 .forest-scene.winter .christmas-tree { filter: drop-shadow(0 6px 14px rgba(20, 40, 60, 0.18)); }
 
@@ -219,6 +223,25 @@ input, select { font: inherit; }
 }
 .species-label { font-size: 12px; color: var(--muted); font-weight: 500; }
 .species-row select { max-width: 64%; }
+.work-stepper { display: inline-flex; align-items: center; gap: 6px; }
+.step-unit { font-size: 12px; color: var(--muted); }
+.step-btn {
+  width: 27px;
+  height: 27px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-soft);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1;
+  transition: background 0.15s, border-color 0.15s;
+}
+.step-btn:hover:not(:disabled) { background: var(--surface-solid); border-color: var(--border-strong); }
+.step-btn:disabled { opacity: 0.5; cursor: default; }
+.work-stepper .num-field input[type="number"] { width: 62px; text-align: center; }
 
 .timer-tree {
   position: relative;
@@ -280,6 +303,7 @@ input, select { font: inherit; }
 .btn svg { width: 14px; height: 14px; }
 .btn-icon { display: inline-flex; }
 .timer-hint { font-size: 11.5px; color: var(--muted); margin-top: 10px; }
+.streak-hint { color: var(--accent); font-weight: 500; margin-top: 4px; }
 
 .side-stack { display: flex; flex-direction: column; gap: 14px; }
 .card-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
@@ -305,7 +329,7 @@ input, select { font: inherit; }
 .section-title { font-size: 15px; font-weight: 600; }
 .chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--border); font-size: 11.5px; color: var(--muted); font-weight: 500; }
 
-.day { margin-bottom: 12px; }
+.day { margin-bottom: 0; }
 .day-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 6px; padding: 0 2px; }
 .day-name { font-size: 12.5px; font-weight: 600; }
 .day-date { font-size: 11px; color: var(--muted); font-weight: 400; margin-left: 4px; }
@@ -313,6 +337,7 @@ input, select { font: inherit; }
 .day-strip {
   display: flex;
   align-items: flex-end;
+  justify-content: center;
   gap: 8px;
   padding: 10px 12px 8px;
   background: var(--surface);
@@ -349,6 +374,12 @@ input, select { font: inherit; }
   min-height: 280px;
 }
 .wald-history { margin-top: 4px; }
+.wald-history-days {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 10px;
+  align-items: start;
+}
 
 .species { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; }
 @media (max-width: 620px) { .species { grid-template-columns: repeat(2, 1fr); } }
@@ -376,6 +407,7 @@ input, select { font: inherit; }
 .chart-labels { display: flex; justify-content: space-between; gap: 8px; padding: 7px 4px 0; }
 .chart-labels span { flex: 1; text-align: center; font-size: 10.5px; color: var(--muted); }
 .chart-labels span.today { color: var(--accent); font-weight: 600; }
+.stats-note { font-size: 11.5px; color: var(--muted); margin-top: 10px; }
 
 .settings-group { margin-bottom: 12px; }
 .settings-group:last-child { margin-bottom: 0; }

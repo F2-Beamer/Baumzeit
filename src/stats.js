@@ -31,6 +31,49 @@ export function validSessions(sessions) {
   });
 }
 
+// Ein Pausentag ist erlaubt, wenn in den 7 Tagen bis einschließlich
+// dieses Tages mindestens 5 Lerntage liegen (5-von-7-Regel).
+export const STREAK_WINDOW_DAYS = 7;
+export const STREAK_MIN_LEARNING_DAYS = 5;
+
+export function learningDaysInWindow(byDay, endDay, days = STREAK_WINDOW_DAYS) {
+  const end = startOfDay(endDay);
+  let count = 0;
+  for (let i = 0; i < days; i += 1) {
+    const d = new Date(end);
+    d.setDate(d.getDate() - i);
+    if (byDay.has(dayKey(d))) count += 1;
+  }
+  return count;
+}
+
+export function restDayAllowed(byDay, day) {
+  return learningDaysInWindow(byDay, day, STREAK_WINDOW_DAYS) >= STREAK_MIN_LEARNING_DAYS;
+}
+
+// Zählt Lerntage der aktuellen Serie. Pausentage zählen nicht mit und
+// unterbrechen den Streak nur, wenn die 5-von-7-Regel nicht erfüllt ist.
+export function computeStreak(byDay, now = new Date()) {
+  let cursor = startOfDay(now);
+  // Heute ist offen: Ohne Session heute ab gestern rückwärts zählen.
+  if (!byDay.has(dayKey(cursor))) cursor.setDate(cursor.getDate() - 1);
+
+  let streak = 0;
+  while (true) {
+    if (byDay.has(dayKey(cursor))) {
+      streak += 1;
+      cursor.setDate(cursor.getDate() - 1);
+      continue;
+    }
+    if (restDayAllowed(byDay, cursor)) {
+      cursor.setDate(cursor.getDate() - 1);
+      continue;
+    }
+    break;
+  }
+  return streak;
+}
+
 export function computeStats(sessions, now = new Date()) {
   const valid = validSessions(sessions);
   const todayStart = startOfDay(now).getTime();
@@ -59,13 +102,12 @@ export function computeStats(sessions, now = new Date()) {
     last7.push({ key: k, date: d, minutes: byDay.get(k) || 0, today: i === 0 });
   }
 
-  let streak = 0;
-  const cursor = startOfDay(now);
-  if (!byDay.has(dayKey(cursor))) cursor.setDate(cursor.getDate() - 1);
-  while (byDay.has(dayKey(cursor))) {
-    streak += 1;
-    cursor.setDate(cursor.getDate() - 1);
-  }
+  const streak = computeStreak(byDay, now);
+  const todayKey = dayKey(now);
+  const learnedToday = byDay.has(todayKey);
+  const last7LearningDays = last7.filter((d) => d.minutes > 0).length;
+  const restDayAvailable = streak > 0 && !learnedToday && restDayAllowed(byDay, now);
+  const streakAtRisk = streak > 0 && !learnedToday && !restDayAvailable;
 
   return {
     todayMinutes: today,
@@ -73,6 +115,10 @@ export function computeStats(sessions, now = new Date()) {
     totalMinutes: total,
     totalTrees: valid.length,
     streak,
+    learnedToday,
+    last7LearningDays,
+    restDayAvailable,
+    streakAtRisk,
     last7,
     byDay
   };

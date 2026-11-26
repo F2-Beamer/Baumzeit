@@ -62,6 +62,18 @@
               <select id="speciesSelect" aria-label="Baumart wählen"></select>
             </div>
 
+            <div class="species-row">
+              <span class="species-label">Lernzeit</span>
+              <div class="work-stepper">
+                <button class="step-btn" id="timerWorkMinus" type="button" aria-label="Lernzeit um 5 Minuten verringern">−</button>
+                <div class="num-field">
+                  <input type="number" id="timerWorkInput" min="1" max="180" step="1" inputmode="numeric" aria-label="Lernzeit in Minuten">
+                </div>
+                <button class="step-btn" id="timerWorkPlus" type="button" aria-label="Lernzeit um 5 Minuten erhöhen">+</button>
+                <span class="step-unit">Min</span>
+              </div>
+            </div>
+
             <div class="timer-tree">
               <div class="big-tree grow-in" id="bigTree"></div>
             </div>
@@ -76,6 +88,7 @@
               <button class="btn btn-ghost hidden" id="endBtn">Session beenden</button>
             </div>
             <div class="timer-hint" id="timerHint">Nach der Session startet die Pause automatisch</div>
+            <div class="timer-hint streak-hint hidden" id="streakHint"></div>
           </div>
 
           <div class="side-stack">
@@ -131,6 +144,7 @@
           <div class="card-head"><span class="card-title">Letzte 7 Tage</span><span class="card-sub">Lernzeit pro Tag</span></div>
           <div class="chart" id="chart"></div>
           <div class="chart-labels" id="chartLabels"></div>
+          <div class="stats-note" id="statsStreakNote"></div>
         </div>
       </section>
 
@@ -232,11 +246,11 @@
           <div class="help-grid">
             <div class="help-item">
               <div class="help-title">Session starten</div>
-              <p>Modus wählen, Lernzeit und Pause einstellen und auf „Session starten“ klicken. Mit der Leertaste geht es auch.</p>
+              <p>Modus wählen, Lernzeit und Pause einstellen und auf „Session starten“ klicken. Die Lernzeit lässt sich auch direkt auf der Timer-Seite ändern; während einer Session ist sie gesperrt. Mit der Leertaste geht es auch.</p>
             </div>
             <div class="help-item">
               <div class="help-title">Baum &amp; Wald</div>
-              <p>Der Baum wächst in 60 Minuten voll aus. Danach wächst bis 120 Minuten eine Blumenwiese um den Baum. Nach dem Ende wird er gepflanzt – die Größe im Wald richtet sich nach der tatsächlichen Lernzeit.</p>
+              <p>Der Baum wächst in 60 Minuten voll aus. Danach wächst bis 120 Minuten eine Blumenwiese um den Baum. Nach dem Ende wird er gepflanzt – die Größe im Wald richtet sich nach der tatsächlichen Lernzeit. Der Verlauf unter der Waldszene zeigt die letzten 4 Lerntage.</p>
             </div>
             <div class="help-item">
               <div class="help-title">Pomodoro oder frei</div>
@@ -261,6 +275,12 @@
               <p>Stufe 1: ab 75 Min<br>Stufe 2: ab 90 Min<br>Stufe 3: ab 105 Min<br>Stufe 4: ab 120 Min (volle Blumenwiese)</p>
             </div>
           </div>
+        </div>
+
+        <div class="card help-card">
+          <div class="card-head"><span class="card-title">Streak, Pausentage und Vögel</span></div>
+          <p class="help-text">Der Streak zählt Lerntage, nicht Kalendertage. Mindestens 5 Lerntage in einem rollierenden 7-Tage-Fenster halten ihn am Leben – so sind bis zu 2 Pausentage möglich. Ein Pausentag bricht den Streak erst, wenn diese Regel nicht mehr erfüllt ist.</p>
+          <p class="help-text" style="margin-top:8px">Ab 10 Lerntagen fliegen 3 Vögel durch deinen Wald, ab 20 Lerntagen 4 und ab 30 Lerntagen 5. Die Vögel erscheinen nur in der Wald-Ansicht und verschwinden wieder, wenn der Streak unter 10 fällt.</p>
         </div>
 
         <div class="card help-card">

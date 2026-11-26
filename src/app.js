@@ -346,6 +346,7 @@ export class App {
     if (a.phase === 'focus') {
       const minutes = auto ? Math.max(1, Math.round(a.targetMs / 60000)) : Math.max(1, Math.round(elapsed / 60000));
       const completed = auto || elapsed >= a.targetMs - 1000;
+      const streakBefore = computeStats(this.state.sessions).streak;
       this.plantTree({
         minutes,
         species: a.species,
@@ -354,16 +355,18 @@ export class App {
         startedAt: a.startedAt,
         endedAt: now
       });
+      const streakAfter = computeStats(this.state.sessions).streak;
       this.state.active = null;
       this.confirmEnd = false;
 
       const pomodoro = this.state.settings.mode === 'pomodoro' && a.mode === 'pomodoro';
+      const milestone = restore ? '' : this.streakMilestoneToast(streakBefore, streakAfter);
       if (pomodoro && !restore) {
         this.startBreak(a.species, a.seed);
-        this.showToast(`Baum gepflanzt · ${formatMinutes(minutes)}. Pause startet.`, true);
+        this.showToast(milestone || `Baum gepflanzt · ${formatMinutes(minutes)}. Pause startet.`, true);
         this.notify('Baum gepflanzt', `${formatMinutes(minutes)} gelernt. Zeit für eine Pause.`);
       } else {
-        this.showToast(`Baum gepflanzt · ${formatMinutes(minutes)}.`, true);
+        this.showToast(milestone || `Baum gepflanzt · ${formatMinutes(minutes)}.`, true);
         this.notify('Baum gepflanzt', `Du hast ${formatMinutes(minutes)} gelernt.`);
       }
     } else {
@@ -377,6 +380,16 @@ export class App {
     this.save();
     this.renderAll();
     this.broadcast();
+  }
+
+  streakMilestoneToast(before, after) {
+    const steps = [
+      { at: 30, text: 'Streak 30 – der ganze Schwarm ist da' },
+      { at: 20, text: 'Streak 20 – mehr Vögel im Wald' },
+      { at: 10, text: 'Streak 10 – Vögel im Wald' }
+    ];
+    const hit = steps.find((step) => before < step.at && after >= step.at);
+    return hit ? `${hit.text}.` : '';
   }
 
   plantTree({ minutes, species, seed, completed, startedAt, endedAt }) {
@@ -555,12 +568,31 @@ export class App {
     const speciesSelect = this.$('speciesSelect');
     if (speciesSelect) speciesSelect.disabled = !!a;
 
+    // Lernzeit direkt am Timer: während einer Session gesperrt.
+    const timerWork = this.$('timerWorkInput');
+    if (timerWork) {
+      if (document.activeElement !== timerWork) timerWork.value = String(s.workMinutes);
+      timerWork.disabled = !!a;
+    }
+    const workMinus = this.$('timerWorkMinus');
+    if (workMinus) workMinus.disabled = !!a;
+    const workPlus = this.$('timerWorkPlus');
+    if (workPlus) workPlus.disabled = !!a;
+
     const hint = this.$('timerHint');
     if (hint) {
       if (a && a.phase === 'break') hint.textContent = 'Pause läuft – neue Session danach per Klick';
       else if (a) hint.textContent = 'Der Baum wächst mit jeder Minute';
       else if (s.mode === 'pomodoro') hint.textContent = 'Nach der Session startet die Pause automatisch';
       else hint.textContent = 'Am Ende wird der Baum direkt gepflanzt';
+    }
+
+    // Streak-Hinweis nur im Hauptfenster und nur bei Gefahr.
+    const streakHint = this.$('streakHint');
+    if (streakHint) {
+      const atRisk = !a && computeStats(this.state.sessions).streakAtRisk;
+      streakHint.classList.toggle('hidden', !atRisk);
+      if (atRisk) streakHint.textContent = 'Heute lernen hält deinen Streak';
     }
   }
 
@@ -617,10 +649,11 @@ export class App {
 
     const host = this.$('waldDays');
     if (host) {
-      const groups = groupSessionsByDay(this.state.sessions, 30);
+      const groups = groupSessionsByDay(this.state.sessions, 4);
       const forest = forestSceneHTML(this.state.sessions, {
         date: new Date(),
-        christmas: this.state.settings.christmas
+        christmas: this.state.settings.christmas,
+        streak: stats.streak
       });
       this.lastWaldDay = localDayKey();
       if (!groups.length) {
@@ -640,7 +673,7 @@ export class App {
             <div class="day-strip">${trees}</div>
           </div>`;
         }).join('');
-        host.innerHTML = `${forest}<div class="wald-history"><div class="section-head" style="margin:14px 2px 10px"><span class="section-title" style="font-size:13px">Verlauf</span><span class="card-sub">nach Tagen</span></div>${days}</div>`;
+        host.innerHTML = `${forest}<div class="wald-history"><div class="section-head" style="margin:14px 2px 10px"><span class="section-title" style="font-size:13px">Verlauf</span><span class="card-sub">letzte 4 Lerntage</span></div><div class="wald-history-days">${days}</div></div>`;
       }
     }
 
@@ -666,7 +699,19 @@ export class App {
     const total = this.$('statsTotal');
     if (total) total.textContent = formatHours(stats.totalMinutes);
     const streak = this.$('statsStreak');
-    if (streak) streak.textContent = `${stats.streak} ${stats.streak === 1 ? 'Tag' : 'Tage'}`;
+    if (streak) streak.textContent = `${stats.streak} ${stats.streak === 1 ? 'Lerntag' : 'Lerntage'}`;
+
+    const streakNote = this.$('statsStreakNote');
+    if (streakNote) {
+      const days = stats.last7LearningDays;
+      let text = `Letzte 7 Tage: ${days} ${days === 1 ? 'Lerntag' : 'Lerntage'}`;
+      if (stats.streak > 0) {
+        if (stats.learnedToday) text += ' · Streak sicher';
+        else if (stats.restDayAvailable) text += ' · Pausentag möglich';
+        else if (stats.streakAtRisk) text += ' · heute lernen hält den Streak';
+      }
+      streakNote.textContent = text;
+    }
 
     const chart = this.$('chart');
     const labels = this.$('chartLabels');
@@ -692,6 +737,8 @@ export class App {
 
     const work = this.$('workInput');
     if (work && document.activeElement !== work) work.value = String(s.workMinutes);
+    const timerWork = this.$('timerWorkInput');
+    if (timerWork && document.activeElement !== timerWork) timerWork.value = String(s.workMinutes);
     const brk = this.$('breakInput');
     if (brk && document.activeElement !== brk) brk.value = String(s.breakMinutes);
 
@@ -945,21 +992,36 @@ export class App {
       });
     }
 
-    const bindMinutes = (id, key, min, max) => {
-      const input = this.$(id);
-      if (!input) return;
-      input.addEventListener('change', () => {
-        const fallback = this.state.settings[key];
-        const raw = input.value.trim();
-        const next = raw === '' ? fallback : clampInt(raw, min, max, fallback);
-        input.value = String(next);
-        if (next === this.state.settings[key]) return;
-        this.state.settings[key] = next;
-        this.afterSettingsChange();
-      });
+    const bindMinutes = (ids, key, min, max) => {
+      for (const id of ids) {
+        const input = this.$(id);
+        if (!input) continue;
+        input.addEventListener('change', () => {
+          const fallback = this.state.settings[key];
+          const raw = input.value.trim();
+          const next = raw === '' ? fallback : clampInt(raw, min, max, fallback);
+          input.value = String(next);
+          if (next === this.state.settings[key]) return;
+          this.state.settings[key] = next;
+          this.afterSettingsChange();
+        });
+      }
     };
-    bindMinutes('workInput', 'workMinutes', 1, 180);
-    bindMinutes('breakInput', 'breakMinutes', 1, 60);
+    bindMinutes(['workInput', 'timerWorkInput'], 'workMinutes', 1, 180);
+    bindMinutes(['breakInput'], 'breakMinutes', 1, 60);
+
+    const stepWork = (delta) => {
+      if (this.state.active) return;
+      const current = this.state.settings.workMinutes;
+      const next = clampInt(current + delta, 1, 180, current);
+      if (next === current) return;
+      this.state.settings.workMinutes = next;
+      this.afterSettingsChange();
+    };
+    const workMinus = this.$('timerWorkMinus');
+    if (workMinus) workMinus.addEventListener('click', () => stepWork(-5));
+    const workPlus = this.$('timerWorkPlus');
+    if (workPlus) workPlus.addEventListener('click', () => stepWork(5));
 
     const closeTray = this.$('closeTrayToggle');
     if (closeTray) closeTray.addEventListener('change', () => {
